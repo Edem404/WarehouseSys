@@ -1,0 +1,31 @@
+# CMake generated files
+CMakeLists.txt
+CMakeFiles/
+CMakeCache.txt
+CMakePresets.json
+cmake_install.cmake
+Makefile
+
+# Visual Studio / IDE files
+*.sln
+*.vcxproj*
+*.user
+*.ncb
+*.sdf
+*.opensdf
+*.idb
+*.vs
+
+# Build directories
+out/build/          
+x64/
+Debug/
+Release/
+
+# Configs
+WarehouseSys/configs/db_config.json      
+# configs/*.example.json  
+
+# OS generated files
+.DS_Store
+Thumbs.db
