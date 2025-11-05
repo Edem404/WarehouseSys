@@ -1,31 +1,73 @@
-# CMake generated files
-CMakeLists.txt
-CMakeFiles/
+# ============================
+# Visual Studio / CMake
+# ============================
+
+# Системні папки VS
+.vs/
+*.VC.db
+*.VC.VC.opendb
+
+# Кеш CMake
 CMakeCache.txt
-CMakePresets.json
+CMakeFiles/
+CMakeScripts/
+Testing/
+CTestTestfile.cmake
 cmake_install.cmake
-Makefile
+install_manifest.txt
+_compile_commands.json
+CMakeUserPresets.json.user
+CMakeSettings.json.user
 
-# Visual Studio / IDE files
-*.sln
-*.vcxproj*
-*.user
-*.ncb
-*.sdf
-*.opensdf
-*.idb
-*.vs
-
-# Build directories
-out/build/          
-x64/
+# Каталоги збірки та проміжні файли
+WarehouseSys/configs/db_config.json
+build/
+out/
+bin/
+obj/
+RelWithDebInfo/
+MinSizeRel/
 Debug/
 Release/
 
-# Configs
-WarehouseSys/configs/db_config.json      
-# configs/*.example.json  
+# Тимчасові файли компіляції
+*.obj
+*.pdb
+*.exe
+*.dll
+*.lib
+*.exp
+*.ilk
+*.idb
+*.sdf
+*.tlog
+*.log
+*.cache
+*.lastbuildstate
 
-# OS generated files
-.DS_Store
-Thumbs.db
+# Конфігураційні файли користувача
+*.user
+*.suo
+*.userosscache
+*.userprefs
+
+# Журнали, резервні копії, тимчасові дані
+*.tmp
+*.bak
+*.swp
+*.zip
+*.7z
+
+# ============================
+# Не ігнорувати вихідні файли проекту
+# ============================
+!CMakeLists.txt
+!*.sln
+!*.vcxproj
+!*.vcxproj.filters
+!*.h
+!*.hpp
+!*.cpp
+!*.c
+!include/
+!src/       # якщо є конфіги, які потрібні у репозиторії

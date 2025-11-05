@@ -1,11 +1,14 @@
 ﻿#include "WarehouseSys.h"
 
 using json = nlohmann::json;
+
 int main()
-{   
+{
+    // load configs for database
     json config = [&]() {
         std::ifstream file(std::string(CONFIGS_DIR) + "/db_config.json");
-        if (!file.is_open()) throw std::runtime_error("Cannot open file");
+        if (!file.is_open())
+            throw std::runtime_error("Cannot open configuration file");
         std::stringstream buffer;
         buffer << file.rdbuf();
         return json::parse(buffer.str());
@@ -18,13 +21,13 @@ int main()
 
     try
     {
-        // 1. Connect to the system database 'postgres' to check/create our target database
+        // minor checks
         soci::session sys_sql(soci::postgresql,
             "host=" + host + " dbname=postgres user=" + user + " password=" + password);
 
-        // 2. Check if database 'testdb' exists
         int count = 0;
-        sys_sql << "SELECT COUNT(*) FROM pg_database WHERE datname=:dbname", soci::use(dbname), soci::into(count);
+        sys_sql << "SELECT COUNT(*) FROM pg_database WHERE datname=:dbname",
+            soci::use(dbname), soci::into(count);
 
         if (count == 0)
         {
@@ -37,23 +40,36 @@ int main()
             std::cout << "Database " << dbname << " already exists." << std::endl;
         }
 
-        // 3. Connect to the new or existing database 'testdb'
+        // main database connection
         soci::session sql(soci::postgresql,
             "host=" + host + " dbname=" + dbname + " user=" + user + " password=" + password);
 
         std::cout << "Connected to " << dbname << " successfully!" << std::endl;
 
-        // 5. Fetch all rows from 'test_table' and print them
-        soci::rowset<soci::row> rs = (sql.prepare << "SELECT * FROM test_table");
+        // --- Crow server init---
+        crow::SimpleApp app;
 
-        std::cout << "\nData from test_table:" << std::endl;
-        for (auto it = rs.begin(); it != rs.end(); ++it)
-        {
-            const soci::row& r = *it;
-            int id = r.get<int>("id");
-            std::string name = r.get<std::string>("name");
-            std::cout << "id=" << id << ", name=" << name << std::endl;
-        }
+        // get count of records in table
+        CROW_ROUTE(app, "/count").methods("GET"_method)
+            ([&sql]() {
+                json result;
+                try {
+                        int table_count = 0;
+                        sql << "SELECT COUNT(*) FROM test_table", soci::into(table_count);
+                        result["row_count"] = table_count;
+                }
+                catch (const std::exception& e) {
+                    result["error"] = e.what();
+                }
+                return crow::response(result.dump());
+            });
+
+        CROW_ROUTE(app, "/").methods("GET"_method)
+            ([]() {
+            return "WarehouseSysDebug \n available routes:\n/count\n";
+            });
+        // run server on port 8080
+        app.port(8080).multithreaded().run();
     }
     catch (const std::exception& e)
     {
