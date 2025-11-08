@@ -19,7 +19,7 @@ add_compile_definitions(CONFIGS_DIR="${PROJECT_SOURCE_DIR}/configs")
 
 
 # Create executable file
-add_executable(WarehouseSys WarehouseSys.cpp     "include/WarehouseSys/database/idb_session.h"  "include/WarehouseSys/database/soci_session.h"  "include/WarehouseSys/database/idb_row.h")
+add_executable(WarehouseSys WarehouseSys.cpp     "include/WarehouseSys/database/idb_session.h"  "include/WarehouseSys/database/soci_session.h"  "include/WarehouseSys/database/idb_row.h" "include/WarehouseSys/database/soci_row.h" "include/WarehouseSys/models/product.h" "include/WarehouseSys/models/employee.h"  "include/WarehouseSys/models/i_dto.h" "src/models/product.cpp" "src/models/employee.cpp" "include/WarehouseSys/models/employee_position.h" "src/models/employee_position.cpp" "include/WarehouseSys/models/product_type.h" "src/models/product_type.cpp" "include/WarehouseSys/controllers/employee_position_controller.h" "include/WarehouseSys/repositories/i_repository.h" "src/database/soci_session.cpp")
 
 # Pathes to SOCI and PostgreSQL libs
 set(SOCI_LIB_DIR "C:/Libraries/soci/build/lib")

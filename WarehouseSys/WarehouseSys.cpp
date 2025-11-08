@@ -64,9 +64,55 @@ int main()
                 return crow::response(result.dump());
             });
 
+        CROW_ROUTE(app, "/all").methods("GET"_method)
+            ([&sql]() {
+            crow::json::wvalue result;
+
+            try {
+                soci::rowset<soci::row> rs = (sql.prepare << "SELECT * FROM test_table");
+
+                std::size_t index = 0;
+                for (const auto& r : rs) {
+                    std::unique_ptr<IDBRow> row = std::make_unique<SociRow>(&r);
+
+                    crow::json::wvalue record;
+                    const std::size_t cols = r.size();
+
+                    for (std::size_t i = 0; i < cols; ++i) {
+                        const soci::column_properties& props = r.get_properties(i);
+                        const std::string col_name = props.get_name();
+
+                        if (auto val = row->get<std::string>(col_name)) {
+                            record[col_name] = *val;
+                        }
+                        else if (auto val = row->get<int>(col_name)) {
+                            record[col_name] = *val;
+                        }
+                        else if (auto val = row->get<double>(col_name)) {
+                            record[col_name] = *val;
+                        }
+                        else {
+                            record[col_name] = nullptr;
+                        }
+                    }
+
+                    // Для масиву: призначаємо за індексом
+                    result[index++] = std::move(record);
+                }
+            }
+            catch (const std::exception& e) {
+                crow::json::wvalue err;
+                err["error"] = e.what();
+                return crow::response(500, err.dump());
+            }
+
+            return crow::response(result.dump());
+        });
+
+
         CROW_ROUTE(app, "/").methods("GET"_method)
             ([]() {
-            return "WarehouseSysDebug \n available routes:\n/count\n";
+            return "WarehouseSysDebug \n available routes:\n/count\n/all\n";
             });
         // run server on port 8080
         app.port(8080).multithreaded().run();

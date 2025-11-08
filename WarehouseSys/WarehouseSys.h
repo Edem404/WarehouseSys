@@ -15,5 +15,6 @@
 #include <string>
 #include <json.hpp>
 #include <crow.h>
+#include "database/soci_row.h"
 
 // TODO: Reference additional headers your program requires here.
