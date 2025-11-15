@@ -8,6 +8,7 @@ private:
 	std::string position_name;
 	int access_level{};
 public:
+	static const std::string TABLE_NAME;
 
 	//dto methods
 	void from_db_row(const IDBRow& row) override;

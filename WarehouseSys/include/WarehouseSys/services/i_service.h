@@ -5,8 +5,8 @@
 #include <memory>
 
 template<typename T>
-class IRepository {
+class IService {
 public:
-	virtual ~IRepository() = default;
+	virtual ~IService() = default;
 	virtual std::vector<T> get_all() = 0;
 };

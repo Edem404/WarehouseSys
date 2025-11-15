@@ -10,7 +10,10 @@ public:
 	explicit SociSession(soci::session& db) : db_(db) {}
 
 	void execute(const std::string& query) override;
+	//void fetch(const std::string& query,
+	//	std::function<void(const std::shared_ptr<IDBRow>&)> callback) override;
+
 	void fetch(const std::string& query,
-		std::function<void(const std::shared_ptr<IDBRow>&)> callback) override;
+		std::function<void(const IDBRow&)> callback) override;
 protected:
 };

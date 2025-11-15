@@ -1,5 +1,7 @@
 #include "WarehouseSys/models/employee_position.h"
 
+const std::string EmployeePosition::TABLE_NAME = "employee_positions";
+
 void EmployeePosition::from_db_row(const IDBRow& row) {
 	//works fine for all values, but null
 	if (auto val = row.get<int>("id")) id = *val;
