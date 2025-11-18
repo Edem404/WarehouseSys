@@ -22,9 +22,42 @@ public:
 
 template<typename T>
 void BaseRouter<T>::register_routes(crow::App<crow::CORSHandler>& app) {
+    // get all
     app.route_dynamic(_base_path + "/all").methods("GET"_method)
     ([this]() {
         auto [code, body] = _controller->get_all();
+        return crow::response(code, body.dump(4));
+    });
+
+    // get by id
+    app.route_dynamic(_base_path + "/<int>").methods("GET"_method)
+    ([this](int id) {
+        auto [code, body] = _controller->get_by_id(id);
+        return crow::response(code, body.dump(4));
+    });
+
+    // post one
+    app.route_dynamic(_base_path).methods("POST"_method)
+    ([this](const crow::request& req) {
+        json request_body;
+
+        try {
+            request_body = json::parse(req.body.c_str());
+        }
+        catch (std::exception& e) {
+            json err = { {"error", "Invalid JSON format: " + std::string(e.what())} };
+            return crow::response(400, err.dump(4));
+        }
+
+        auto [code, body] = _controller->create(request_body);
+
+        return crow::response(code, body.dump(4));
+    });
+
+    // delete one
+    app.route_dynamic(_base_path + "/<int>").methods("DELETE"_method)
+    ([this](int id) {
+        auto [code, body] = _controller->delete_by_id(id);
         return crow::response(code, body.dump(4));
     });
 }

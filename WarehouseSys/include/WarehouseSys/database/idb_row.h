@@ -2,6 +2,10 @@
 #include <any>
 #include <optional>
 #include <string>
+#include <variant>
+
+// universal interface for different data types
+using DBValue = std::variant<int, double, std::string, bool, std::nullptr_t, size_t>;
 
 class IDBRow {
 public:

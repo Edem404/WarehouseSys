@@ -15,10 +15,28 @@ public:
 	virtual ~BaseService() = default;
 
 	std::vector<T> get_all() override;
+	std::optional<T> get_by_id(size_t id) override;
+	T create(T& itme) override;
+	std::optional<T> delete_by_id(size_t id) override;
 };
 
 
 template<typename T>
 std::vector<T> BaseService<T>::get_all() {
 	return _repository->get_all();
+}
+
+template<typename T>
+std::optional<T> BaseService<T>::get_by_id(size_t id) {
+	return _repository->get_by_id(id);
+}
+
+template<typename T>
+T BaseService<T>::create(T& item) {
+	return _repository->create(item);
+}
+
+template<typename T>
+std::optional<T> BaseService<T>::delete_by_id(size_t id) {
+	return _repository->delete_by_id(id);
 }

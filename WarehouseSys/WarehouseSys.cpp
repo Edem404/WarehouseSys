@@ -118,7 +118,7 @@ int main()
             }
 
             return crow::response(result.dump(4));
-                });
+        });
 
         std::shared_ptr<IRepository<EmployeePosition>> repo =
             std::make_shared<EmployeePositionRepository>(db_session);

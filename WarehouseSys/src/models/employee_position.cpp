@@ -16,3 +16,16 @@ nlohmann::json EmployeePosition::to_json() const {
 		{"access_level", access_level}
 	};
 }
+
+void EmployeePosition::from_json(nlohmann::json json_data) {
+	position_name = json_data.at("position_name").get<std::string>();
+	access_level = json_data.at("access_level").get<int>();
+}
+
+std::map<std::string, DBValue> EmployeePosition::as_map() const {
+	return {
+		{"id", id},
+		{"position_name", position_name},
+		{"access_level", access_level}
+	};
+}
