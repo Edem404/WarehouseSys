@@ -16,6 +16,7 @@ public:
     std::pair<int, json> get_by_id(size_t id) override;
     std::pair<int, json> create(json item_as_json) override;
     std::pair<int, json> delete_by_id(size_t id) override;
+    std::pair<int, json> edit_by_id(size_t id, T& item) override;
 };
 
 
@@ -87,6 +88,20 @@ std::pair<int, json> BaseController<T>::delete_by_id(size_t id) {
         }
     }
     catch (std::exception& e) {
+        json err = { {"error", e.what()} };
+        return { 500, err };
+    }
+}
 
+template<typename T>
+std::pair<int, json> BaseController<T>::edit_by_id(size_t id, T& item) {
+    try {
+        T edited_item;
+        edited_item = _service->edit_by_id(id, item);
+        return { 200, edited_item.to_json() };
+    }
+    catch (std::exception& e) {
+        json err = { {"error", e.what()} };
+        return { 500, err };
     }
 }

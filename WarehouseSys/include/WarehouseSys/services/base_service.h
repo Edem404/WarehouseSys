@@ -18,6 +18,7 @@ public:
 	std::optional<T> get_by_id(size_t id) override;
 	T create(T& itme) override;
 	std::optional<T> delete_by_id(size_t id) override;
+	T edit_by_id(size_t id, T& item) override;
 };
 
 
@@ -39,4 +40,9 @@ T BaseService<T>::create(T& item) {
 template<typename T>
 std::optional<T> BaseService<T>::delete_by_id(size_t id) {
 	return _repository->delete_by_id(id);
+}
+
+template<typename T>
+T BaseService<T>::edit_by_id(size_t id, T& item) {
+	return _repository->edit_by_id(id, item);
 }

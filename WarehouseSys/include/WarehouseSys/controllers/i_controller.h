@@ -17,4 +17,5 @@ public:
 	virtual std::pair<int, json> get_by_id(size_t id) = 0;
 	virtual std::pair<int, json> create(json item_as_json) = 0;
 	virtual std::pair<int, json> delete_by_id(size_t id) = 0;
+	virtual std::pair<int, json> edit_by_id(size_t id, T& item) = 0;
 };

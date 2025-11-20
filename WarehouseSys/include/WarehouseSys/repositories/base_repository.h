@@ -18,6 +18,7 @@ public:
     std::optional<T> get_by_id(size_t id) override;
     T create(T& item) override;
     std::optional<T> delete_by_id(size_t id) override;
+    T edit_by_id(size_t id, T& item) override;
 };
 
 
@@ -152,4 +153,48 @@ std::optional<T> BaseRepository<T>::delete_by_id(size_t id) {
     }
     
     return item_to_delete;
+}
+
+template<typename T>
+T BaseRepository<T>::edit_by_id(size_t id, T& item) {
+    auto map_representation = item.as_map();
+    map_representation.erase("id");
+
+    std::vector<std::string> columns, values;
+
+    for (const auto& [key, value] : map_representation) {
+        columns.push_back(key);
+
+        std::string to_sql_value;
+
+        std::visit([&to_sql_value](auto&& v) {
+            using V = std::decay_t<decltype(v)>;
+            if constexpr (std::is_same_v<V, std::string>)
+                to_sql_value = "'" + v + "'";
+            else if constexpr (std::is_same_v<V, std::nullptr_t>)
+                to_sql_value = "NULL";
+            else if constexpr (std::is_same_v<V, bool>)
+                to_sql_value = v ? "1" : "0";
+            else
+                to_sql_value = std::to_string(v);
+            }, value);
+
+        values.push_back(to_sql_value);
+    }
+
+    std::string set_query_part;
+
+    for (size_t i = 0; i < columns.size(); i++) {
+        set_query_part += columns[i] + "=" + values[i];
+        if (i != columns.size() - 1) {
+            set_query_part += ", ";
+        }
+    }
+
+    std::string query = "UPDATE " + T::TABLE_NAME + " SET "
+        + set_query_part + " WHERE id=" + std::to_string(id) + ";";
+
+    std::cout << "\n final query:\n" << query << std::endl;
+    _session->execute(query);
+    return item;
 }
