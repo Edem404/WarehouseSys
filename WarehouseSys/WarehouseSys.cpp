@@ -1,28 +1,6 @@
 ﻿#include "WarehouseSys.h"
 
-
 using json = nlohmann::json;
-
-//struct CORS {
-//    struct context {};
-//
-//    void before_handle(crow::request& req, crow::response& res, context&) {
-//        // CORS headers for all responses
-//        if (req.method == crow::HTTPMethod::OPTIONS) {
-//            res.add_header("Access-Control-Allow-Origin", "http://localhost:5173");
-//            res.add_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-//            res.add_header("Access-Control-Allow-Headers", "Content-Type");
-//            res.end();
-//        }
-//    }
-//
-//    void after_handle(crow::request&, crow::response& res, context&) {
-//        // CORS headers for all responses
-//        res.add_header("Access-Control-Allow-Origin", "http://localhost:5173");
-//        res.add_header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-//        res.add_header("Access-Control-Allow-Headers", "Content-Type");
-//    }
-//};
 
 int main()
 {
