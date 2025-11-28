@@ -4,7 +4,12 @@ using json = nlohmann::json;
 
 int main()
 {
-    std::shared_ptr<IRouter<EmployeePosition>> employee_router;
+    std::shared_ptr<IRouter<EmployeePosition>> employee_position_router;
+    std::shared_ptr<IRouter<Employee>> employee_router;
+    std::shared_ptr<IRouter<EmployeeAccount>> employee_account_router;
+    std::shared_ptr<IRouter<ProductType>> product_type_router;
+    std::shared_ptr<IRouter<Product>> product_router;
+    std::shared_ptr<IRouter<Supplier>> supplier_router;
 
     json config = [&]() {
         std::ifstream file(std::string(CONFIGS_DIR) + "/db_config.json");
@@ -98,19 +103,65 @@ int main()
             return crow::response(result.dump(4));
         });
 
-        std::shared_ptr<IRepository<EmployeePosition>> repo =
+        std::shared_ptr<IRepository<EmployeePosition>> employee_position_repo =
             std::make_shared<EmployeePositionRepository>(db_session);
+        std::shared_ptr<IRepository<Employee>> employee_repo =
+            std::make_shared<EmployeeRepository>(db_session);
+        std::shared_ptr<IRepository<EmployeeAccount>> employee_account_repo =
+            std::make_shared<EmployeeAccountRepository>(db_session);
+        std::shared_ptr<IRepository<ProductType>> product_type_repo =
+            std::make_shared<ProductTypeRepository>(db_session);
+        std::shared_ptr<IRepository<Product>> product_repo =
+            std::make_shared<ProductRepository>(db_session);
+        std::shared_ptr<IRepository<Supplier>> supplier_repo =
+            std::make_shared<SupplierRepository>(db_session);
 
-        std::shared_ptr<IService<EmployeePosition>> service =
-            std::make_shared<BaseService<EmployeePosition>>(repo);
+        std::shared_ptr<IService<EmployeePosition>> employee_position_service =
+            std::make_shared<BaseService<EmployeePosition>>(employee_position_repo);
+        std::shared_ptr<IService<Employee>> employee_service =
+            std::make_shared<BaseService<Employee>>(employee_repo);
+        std::shared_ptr<IService<EmployeeAccount>> employee_account_service =
+            std::make_shared<BaseService<EmployeeAccount>>(employee_account_repo);
+        std::shared_ptr<IService<ProductType>> product_type_service =
+            std::make_shared<BaseService<ProductType>>(product_type_repo);
+        std::shared_ptr<IService<Product>> product_service =
+            std::make_shared<BaseService<Product>>(product_repo);
+        std::shared_ptr<IService<Supplier>> supplier_service =
+            std::make_shared<BaseService<Supplier>>(supplier_repo);
 
-        std::shared_ptr<IController<EmployeePosition>> controller =
-            std::make_shared<EmployeePositionController>(service);
+        std::shared_ptr<IController<EmployeePosition>> employee_position_controller =
+            std::make_shared<EmployeePositionController>(employee_position_service);
+        std::shared_ptr<IController<Employee>> employee_controller =
+            std::make_shared<EmployeeController>(employee_service);
+        std::shared_ptr<IController<EmployeeAccount>> employee_account_controller =
+            std::make_shared<EmployeeAccountController>(employee_account_service);
+        std::shared_ptr<IController<ProductType>> product_type_controller =
+            std::make_shared<ProductTypeController>(product_type_service);
+        std::shared_ptr<IController<Product>> product_controller =
+            std::make_shared<ProductController>(product_service);
+        std::shared_ptr<IController<Supplier>> supplier_controller =
+            std::make_shared<SupplierController>(supplier_service);
 
+        employee_position_router =
+            std::make_shared<EmployeePositionRouter>(employee_position_controller);
         employee_router =
-            std::make_shared<EmployeePositionRouter>(controller);
+            std::make_shared<EmployeeRouter>(employee_controller);
+        employee_account_router =
+            std::make_shared<EmployeeAccountRouter>(employee_account_controller);
+        product_type_router =
+            std::make_shared<ProductTypeRouter>(product_type_controller);
+        product_router =
+            std::make_shared<ProductRouter>(product_controller);
+        supplier_router =
+            std::make_shared<SupplierRouter>(supplier_controller);
 
+        employee_position_router->register_routes(app);
         employee_router->register_routes(app);
+        employee_account_router->register_routes(app);
+        product_type_router->register_routes(app);
+        product_router->register_routes(app);
+        supplier_router->register_routes(app);
+
         // Запуск сервера на порті 8080
         app.port(8080).multithreaded().run();
     }

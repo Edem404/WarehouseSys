@@ -71,3 +71,31 @@ Release/
 !*.c
 !include/
 !src/       # якщо є конфіги, які потрібні у репозиторії
+
+
+# --- React Frontend ---
+WarehouseSysFrontend/node_modules/
+WarehouseSysFrontend/dist/
+WarehouseSysFrontend/build/
+WarehouseSysFrontend/.env
+WarehouseSysFrontend/.env.local
+WarehouseSysFrontend/.env.*.local
+
+# Logs
+WarehouseSysFrontend/logs
+*.log
+WarehouseSysFrontend/npm-debug.log*
+WarehouseSysFrontend/yarn-debug.log*
+WarehouseSysFrontend/yarn-error.log*
+
+# Editor directories and files
+.vscode/*
+WarehouseSysFrontend/.vscode/
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

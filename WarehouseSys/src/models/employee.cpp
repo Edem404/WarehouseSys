@@ -20,7 +20,7 @@ nlohmann::json Employee::to_json() const {
 
 void Employee::from_json(nlohmann::json json_data) {
 	name = json_data.at("name").get<std::string>();
-	surname = json_data.at("name").get<std::string>();
+	surname = json_data.at("surname").get<std::string>();
 	position_id = json_data.at("position_id").get<int>();
 }
 
