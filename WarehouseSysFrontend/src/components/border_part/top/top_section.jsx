@@ -5,7 +5,7 @@ import { TopContainer, LogoPlaceholder } from './top_section.styled';
 const TopSection = () => {
   return (
     <TopContainer>
-      <LogoPlaceholder>My App Logo</LogoPlaceholder>
+      <LogoPlaceholder>Warehouse System</LogoPlaceholder>
     </TopContainer>
   );
 };

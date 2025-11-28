@@ -45,12 +45,15 @@ export const Form = styled.form`
 
 // Input field
 export const Input = styled.input`
+  /* Include padding and border in the element's total width and height */
+  box-sizing: border-box; 
+
   padding: 14px 16px;
   border: 2px solid #e1e1e1;
   border-radius: 8px;
   font-size: 16px;
   transition: border-color 0.3s, box-shadow 0.3s;
-  width: 100%; // На всю ширину
+  width: 100%;
 
   &:focus {
     outline: none;
@@ -65,6 +68,9 @@ export const Input = styled.input`
 
 // Button
 export const Button = styled.button`
+  /* Include padding and border in the element's total width and height */
+  box-sizing: border-box;
+
   padding: 14px;
   background-color: #007bff;
   color: white;
@@ -74,7 +80,7 @@ export const Button = styled.button`
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.1s;
-  width: 100%; // На всю ширину
+  width: 100%;
 
   &:hover {
     background-color: #0056b3;

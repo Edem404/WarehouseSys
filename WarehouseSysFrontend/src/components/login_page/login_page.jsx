@@ -1,7 +1,7 @@
-// login_page.jsx
 import React, { useState } from 'react';
-import TopSection from './../border_part/top/top_section'; // Імпорт
-import BottomSection from '../border_part/bottom/bottom_section'; // Імпорт
+import { useNavigate } from 'react-router-dom';
+import TopSection from './../border_part/top/top_section';
+import BottomSection from '../border_part/bottom/bottom_section';
 import { 
   PageContainer, 
   LoginCard, 
@@ -18,6 +18,8 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -30,12 +32,36 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      // Імітація запиту до API
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      console.log('Login successful with:', { email, password });
-      alert('Login successful!'); 
+      // Запит до backend C++
+      const response = await fetch('http://localhost:8080/employee_accounts/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('Login successful:', data);
+
+        // *** ГОЛОВНЕ: зберігаємо employeeId ***
+        if (!data.employee_id) {
+          throw new Error("Backend did not return employee_id.");
+        }
+
+        localStorage.setItem('employeeId', data.employee_id);
+
+        // Переадресація
+        navigate('/main');
+      } else {
+        setError(data.message || 'Invalid credentials');
+      }
+
     } catch (err) {
-      setError('Failed to login. Please check your credentials.');
+      console.error("Fetch error:", err);
+      setError('Server is not responding. Is the backend running?');
     } finally {
       setIsLoading(false);
     }
@@ -43,25 +69,25 @@ const LoginPage = () => {
 
   return (
     <PageContainer>
-      <TopSection /> {/* Верхня секція */}
+      <TopSection />
 
       <LoginCard>
         <Title>Welcome Back</Title>
-        
+
         {error && <ErrorMessage>{error}</ErrorMessage>}
 
         <Form onSubmit={handleSubmit}>
           <Input 
-            type="email" 
-            placeholder="Email Address" 
+            type="email"
+            placeholder="Email Address"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={isLoading}
           />
-          
+
           <Input 
-            type="password" 
-            placeholder="Password" 
+            type="password"
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={isLoading}
@@ -73,7 +99,7 @@ const LoginPage = () => {
         </Form>
       </LoginCard>
 
-      <BottomSection /> {/* Нижня секція */}
+      <BottomSection />
     </PageContainer>
   );
 };

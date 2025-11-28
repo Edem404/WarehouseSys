@@ -19,6 +19,7 @@ public:
     T create(T& item) override;
     std::optional<T> delete_by_id(size_t id) override;
     T edit_by_id(size_t id, T& item) override;
+    std::vector<T> find_by_column(const std::string& column_name, const std::string& value) override;
 };
 
 
@@ -197,4 +198,30 @@ T BaseRepository<T>::edit_by_id(size_t id, T& item) {
     std::cout << "\n final query:\n" << query << std::endl;
     _session->execute(query);
     return item;
+}
+
+template<typename T>
+std::vector<T> BaseRepository<T>::find_by_column(const std::string& column_name, const std::string& value) {
+    std::string query = "SELECT * FROM " + T::TABLE_NAME + " WHERE " + column_name + " = '" + value + "'";
+
+    std::vector<T> results;
+
+    try {
+        _session->fetch(query,
+            [&results](const IDBRow& row) {
+                T model_instance;
+
+                model_instance.from_db_row(row);
+
+                results.push_back(model_instance);
+            }
+        );
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Error in find_by_column for table '"
+            << T::TABLE_NAME << "' (col: " << column_name << "): " << e.what() << std::endl;
+        throw;
+    }
+
+    return results;
 }

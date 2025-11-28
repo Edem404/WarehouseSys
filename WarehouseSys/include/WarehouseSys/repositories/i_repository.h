@@ -14,4 +14,5 @@ public:
 	virtual T create(T& item) = 0;
 	virtual std::optional<T> delete_by_id(size_t id) = 0;
 	virtual T edit_by_id(size_t id, T& item) = 0;
+	virtual std::vector<T> find_by_column(const std::string& column_name, const std::string& value) = 0;
 };

@@ -9,4 +9,6 @@ protected:
 public:
 	EmployeeAccountController(std::shared_ptr<IService<EmployeeAccount>> service)
 		: BaseController<EmployeeAccount>(std::move(service)) {}
+
+	std::pair<int, json> login(const std::string& email, const std::string& password);
 };

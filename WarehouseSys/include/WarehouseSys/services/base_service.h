@@ -19,6 +19,7 @@ public:
 	T create(T& itme) override;
 	std::optional<T> delete_by_id(size_t id) override;
 	T edit_by_id(size_t id, T& item) override;
+	std::vector<T> find_by_column(const std::string& column_name, const std::string& value) override;
 };
 
 
@@ -45,4 +46,9 @@ std::optional<T> BaseService<T>::delete_by_id(size_t id) {
 template<typename T>
 T BaseService<T>::edit_by_id(size_t id, T& item) {
 	return _repository->edit_by_id(id, item);
+}
+
+template<typename T>
+std::vector<T> BaseService<T>::find_by_column(const std::string& column_name, const std::string& value) {
+	return _repository->find_by_column(column_name, value);
 }
