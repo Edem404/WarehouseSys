@@ -3,23 +3,20 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import './App.css';
 import LoginPage from './components/login_page/login_page';
 import MainPage from './components/main_page/main_page'
-
+import BasePage from './components/base_page/base_page';
 
 function App() {
   return (
     <Router>
       <div className="App">
         <Routes>
-          {/* Route for Login Page */}
           <Route path="/login" element={<LoginPage />} />
-          
-          {/* Route for Main Page */}
           <Route path="/main" element={<MainPage />} />
 
-          {/* Default redirect: If user goes to "/", redirect to "/login" */}
+          {/* UPDATED: Added /* to allow nested routes like /main/base/products */}
+          <Route path="/main/base/*" element={<BasePage />} />
+
           <Route path="/" element={<Navigate to="/login" replace />} />
-          
-          {/* Catch-all: Redirect unknown routes to login */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </div>

@@ -1,45 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import { 
   HeaderContainer, 
   Logo, 
   ButtonGroup, 
   NavButton, 
-  UserInfo 
-} from './top_section.styled';
+  UserInfo,
+  BurgerWrapper,
+  BurgerMenu,
+  BurgerMenuItem
+} from '../base_page.styled';
 
-const MainTopSection = () => {
+const BaseTopSection = () => {
   const navigate = useNavigate();
   const [accessLevel, setAccessLevel] = useState(0);
   const [employeeName, setEmployeeName] = useState('');
   const [loading, setLoading] = useState(true);
 
+  const [menuOpen, setMenuOpen] = useState(false);
+
   useEffect(() => {
     const fetchUserAccess = async () => {
       try {
         const storedEmployeeId = localStorage.getItem('employeeId'); 
+        
         if (!storedEmployeeId) {
-            console.warn("No employee ID found, redirecting to login.");
             navigate('/login');
             return;
         }
 
         const empResponse = await fetch(`http://localhost:8080/employees/${storedEmployeeId}`);
-        if (!empResponse.ok) throw new Error('Failed to fetch employee');
         const empData = await empResponse.json();
         
         setEmployeeName(`${empData.name} ${empData.surname}`);
+        
         const positionId = empData.position_id;
 
-        // Step B: Fetch Position details to get Access Level
-        // Endpoint example: GET /positions/{id}
         const posResponse = await fetch(`http://localhost:8080/employee_positions/${positionId}`);
-        if (!posResponse.ok) throw new Error('Failed to fetch position');
         const posData = await posResponse.json();
 
-        // Step C: Set Access Level
         setAccessLevel(posData.access_level);
-        console.log(`User Access Level: ${posData.access_level}`);
 
       } catch (error) {
         console.error("Error fetching access level:", error);
@@ -53,36 +54,81 @@ const MainTopSection = () => {
 
   return (
     <HeaderContainer>
-      <Logo onClick={() => navigate('/main')}>WarehouseSys</Logo>
+
+      {/* Бургер кнопка */}
+      <BurgerWrapper onClick={() => setMenuOpen(prev => !prev)}>
+        ☰
+      </BurgerWrapper>
+
+      {/* Меню */}
+      {menuOpen && (
+        <BurgerMenu>
+
+          <BurgerMenuItem
+            onClick={() => {
+              navigate('/main/base/products');
+              setMenuOpen(false);
+            }}
+          >
+            Список товарів
+          </BurgerMenuItem>
+
+          <BurgerMenuItem
+            onClick={() => {
+              navigate('/main/base/reports');
+              setMenuOpen(false);
+            }}
+          >
+            Звіти
+          </BurgerMenuItem>
+
+        </BurgerMenu>
+      )}
+
+      {/* Лого */}
+      <Logo onClick={() => navigate('/main')}>
+        WarehouseSys
+      </Logo>
 
       <ButtonGroup>
+
         {!loading && (
           <UserInfo>
             {employeeName || 'User'} (Lvl: {accessLevel})
           </UserInfo>
         )}
 
-        {/* Base Button - Always Visible */}
-        <NavButton onClick={() => navigate('/main/base')}>
-          Base
+        <NavButton 
+            $isBack 
+            onClick={() => navigate('/main')}
+        >
+          ← Back
         </NavButton>
 
-        {/* Admin Button - Visible only if access_level >= 90 */}
         {!loading && accessLevel >= 90 && (
-          <NavButton $isAdmin onClick={() => navigate('/main/admin')}>
+          <NavButton 
+            $isAdmin 
+            onClick={() => navigate('/main/admin')}
+          >
             Admin Panel
           </NavButton>
         )}
         
-        <NavButton onClick={() => {
-            localStorage.clear();
-            navigate('/login');
-        }} style={{ marginLeft: '20px', backgroundColor: '#7f8c8d' }}>
+        <NavButton 
+            $isLogout 
+            onClick={() => {
+                localStorage.clear();
+                navigate('/login');
+            }} 
+            style={{ marginLeft: '10px' }}
+        >
             Logout
         </NavButton>
+
       </ButtonGroup>
+
     </HeaderContainer>
   );
 };
 
-export default MainTopSection;
+export default BaseTopSection;
