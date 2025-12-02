@@ -21,7 +21,7 @@ nlohmann::json Supplier::to_json() const {
 void Supplier::from_json(nlohmann::json json_data) {
 	name = json_data.at("name").get<std::string>();
 	phone_number = json_data.at("phone_number").get<std::string>();
-	email = json_data.at("phone_number").get<std::string>();
+	email = json_data.at("email").get<std::string>();
 }
 
 std::map<std::string, DBValue> Supplier::as_map() const {

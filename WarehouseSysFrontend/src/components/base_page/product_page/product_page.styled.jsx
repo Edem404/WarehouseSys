@@ -102,3 +102,116 @@ export const ActionButton = styled.button`
     transform: scale(0.96);
   }
 `;
+
+export const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+export const ModalContent = styled.div`
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  width: 500px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+`;
+
+export const ModalTitle = styled.h3`
+  margin-top: 0;
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 20px;
+`;
+
+export const FormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+`;
+
+export const Label = styled.label`
+  font-size: 14px;
+  color: #7f8c8d;
+`;
+
+// ОНОВЛЕНИЙ INPUT (Темний фон)
+export const Input = styled.input`
+  padding: 10px;
+  border: 1px solid #555; /* Темніша рамка */
+  border-radius: 5px;
+  font-size: 16px;
+  
+  background-color: #3e3e3e; /* Темний фон як на скріншоті */
+  color: #ecf0f1; /* Світлий текст */
+
+  &::placeholder {
+    color: #95a5a6; /* Світліший плейсхолдер */
+  }
+
+  &:focus {
+    border-color: #3498db;
+    outline: none;
+  }
+`;
+
+// ОНОВЛЕНИЙ SELECT (Темний фон)
+export const Select = styled.select`
+  padding: 10px;
+  border: 1px solid #555;
+  border-radius: 5px;
+  font-size: 16px;
+  
+  background-color: #3e3e3e; /* Темний фон */
+  color: #ecf0f1; /* Світлий текст */
+  
+  /* Це змушує самі опції випадайки бути темними */
+  option {
+    background-color: #3e3e3e;
+    color: #ecf0f1;
+  }
+
+  &:focus {
+    border-color: #3498db;
+    outline: none;
+  }
+`;
+
+export const ModalButtons = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+`;
+
+export const CancelButton = styled.button`
+  background-color: #95a5a6;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  &:hover { background-color: #7f8c8d; }
+`;
+
+export const SubmitButton = styled.button`
+  background-color: #3498db;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  &:hover { background-color: #2980b9; }
+`;

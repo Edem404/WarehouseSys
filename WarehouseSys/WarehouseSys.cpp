@@ -26,7 +26,7 @@ int main()
     const std::string host = config["host"];
 
     try
-    {
+    {   
         // minor checks
         soci::session sys_sql(soci::postgresql,
             "host=" + host + " dbname=postgres user=" + user + " password=" + password);
@@ -46,11 +46,12 @@ int main()
             std::cout << "Database " << dbname << " already exists." << std::endl;
         }
 
+        std::string connection_string = "host=" + host + " dbname=" + dbname + " user=" + user + " password=" + password;
         soci::session sql(soci::postgresql,
-            "host=" + host + " dbname=" + dbname + " user=" + user + " password=" + password);
+            connection_string);
 
         // db session adapter
-        std::shared_ptr<IDBSession> db_session = std::make_shared<SociSession>(sql);
+        std::shared_ptr<IDBSession> db_session = std::make_shared<SociSession>(sql, connection_string);
 
         std::cout << "Connected to " << dbname << " successfully!" << std::endl;
 
