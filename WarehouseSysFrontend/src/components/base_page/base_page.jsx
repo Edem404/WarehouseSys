@@ -1,7 +1,11 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom'; // 1. Імпортуємо хук локації
+import { useLocation } from 'react-router-dom';
 import BaseTopSection from './top_section/base_top_section';
-import ProductsPage from './product_page/product_page'; // 2. Імпортуємо сторінку товарів (вкажіть правильний шлях)
+import ProductsPage from './product_page/product_page';
+
+// 1. Імпортуємо нову сторінку історії транзакцій
+// (Переконайтеся, що шлях відповідає тому, де ви створили файл)
+import TransactionHistoryPage from './transaction_history_page/transaction_history_page';
 
 import { 
   PageContainer, 
@@ -16,6 +20,9 @@ const BasePage = () => {
   // Логіка визначення, яку сторінку показувати
   const isProductsPage = location.pathname.includes('/products');
   const isReportsPage = location.pathname.includes('/reports');
+  
+  // 2. Додаємо перевірку: чи ми на сторінці транзакцій
+  const isTransactionsPage = location.pathname.includes('/transactions');
 
   // Виносимо стандартний контент (Дашборд) в окрему змінну для чистоти
   const DashboardContent = () => (
@@ -55,9 +62,12 @@ const BasePage = () => {
         {isProductsPage && <ProductsPage />}
         
         {isReportsPage && <ReportsStub />}
+
+        {/* 3. Відображаємо історію транзакцій, якщо обрано цей пункт меню */}
+        {isTransactionsPage && <TransactionHistoryPage />}
         
-        {/* Якщо не товари і не звіти - показуємо дашборд */}
-        {!isProductsPage && !isReportsPage && <DashboardContent />}
+        {/* Якщо не товари, не звіти і не транзакції - показуємо дашборд */}
+        {!isProductsPage && !isReportsPage && !isTransactionsPage && <DashboardContent />}
 
       </MainContent>
     </PageContainer>

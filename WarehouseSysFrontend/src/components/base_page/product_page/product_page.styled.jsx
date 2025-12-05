@@ -85,6 +85,7 @@ export const EmptyMessage = styled.div`
 
 export const ActionButton = styled.button`
   border: none;
+  /* Якщо передано проп $delete - червоний, інакше - синій (за замовчуванням) */
   background-color: ${props => props.$delete ? "#e74c3c" : "#3498db"};
   padding: 7px 14px;
   color: white;
@@ -102,6 +103,8 @@ export const ActionButton = styled.button`
     transform: scale(0.96);
   }
 `;
+
+// === СТИЛІ ДЛЯ МОДАЛЬНИХ ВІКОН ===
 
 export const ModalOverlay = styled.div`
   position: fixed;
@@ -145,18 +148,17 @@ export const Label = styled.label`
   color: #7f8c8d;
 `;
 
-// ОНОВЛЕНИЙ INPUT (Темний фон)
 export const Input = styled.input`
   padding: 10px;
-  border: 1px solid #555; /* Темніша рамка */
+  border: 1px solid #555;
   border-radius: 5px;
   font-size: 16px;
   
-  background-color: #3e3e3e; /* Темний фон як на скріншоті */
-  color: #ecf0f1; /* Світлий текст */
+  background-color: #3e3e3e;
+  color: #ecf0f1;
 
   &::placeholder {
-    color: #95a5a6; /* Світліший плейсхолдер */
+    color: #95a5a6;
   }
 
   &:focus {
@@ -165,17 +167,15 @@ export const Input = styled.input`
   }
 `;
 
-// ОНОВЛЕНИЙ SELECT (Темний фон)
 export const Select = styled.select`
   padding: 10px;
   border: 1px solid #555;
   border-radius: 5px;
   font-size: 16px;
   
-  background-color: #3e3e3e; /* Темний фон */
-  color: #ecf0f1; /* Світлий текст */
+  background-color: #3e3e3e;
+  color: #ecf0f1;
   
-  /* Це змушує самі опції випадайки бути темними */
   option {
     background-color: #3e3e3e;
     color: #ecf0f1;
@@ -214,4 +214,17 @@ export const SubmitButton = styled.button`
   cursor: pointer;
   font-weight: bold;
   &:hover { background-color: #2980b9; }
+`;
+
+// === НОВИЙ СТИЛЬ (Додано для відображення залишків у транзакціях) ===
+export const StockInfo = styled.p`
+  color: #7f8c8d;
+  margin-bottom: 15px;
+  font-size: 15px;
+  text-align: center;
+
+  b {
+    color: #2c3e50;
+    font-weight: 600;
+  }
 `;

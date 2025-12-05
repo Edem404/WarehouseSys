@@ -4,6 +4,7 @@
 #include <any>
 #include <optional>
 #include <string>
+#include <chrono>
 
 class SociRow final : public IDBRow {
 private:
@@ -32,6 +33,11 @@ protected:
                 return row_->get<long long>(column_name);
             case soci::dt_unsigned_long_long:
                 return row_->get<unsigned long long>(column_name);
+            case soci::dt_date: {
+                std::tm tm_val = row_->get<std::tm>(column_name);
+                std::time_t t = _mkgmtime(&tm_val); // UTC
+                return std::chrono::system_clock::from_time_t(t);
+            }
             default:
                 return std::nullopt;
             }
@@ -58,6 +64,11 @@ protected:
                 return row_->get<long long>(index);
             case soci::dt_unsigned_long_long:
                 return row_->get<unsigned long long>(index);
+            case soci::dt_date: {
+                std::tm tm_val = row_->get<std::tm>(index);
+                std::time_t t = _mkgmtime(&tm_val); // UTC
+                return std::chrono::system_clock::from_time_t(t);
+            }
             default:
                 return std::nullopt;
             }

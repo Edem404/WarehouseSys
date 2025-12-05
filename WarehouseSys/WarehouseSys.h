@@ -26,6 +26,8 @@
 #include <repositories/product_type_repository.h>
 #include <repositories/product_repository.h>
 #include <repositories/supplier_repository.h>
+#include <repositories/inventory_transaction_type_repository.h>
+#include <repositories/inventory_transaction_repository.h>
 
 //services
 #include <services/employee_position_service.h>
@@ -34,6 +36,8 @@
 #include <services/product_type_service.h>
 #include <services/product_service.h>
 #include <services/supplier_service.h>
+#include <services/inventory_transaction_type_service.h>
+#include <services/inventory_transaction_service.h>
 
 //controllers
 #include <controllers/employee_position_controller.h>
@@ -42,6 +46,8 @@
 #include <controllers/product_type_controller.h>
 #include <controllers/product_controller.h>
 #include <controllers/supplier_controller.h>
+#include <controllers/inventory_transaction_type_controller.h>
+#include <controllers/inventory_transaction_controller.h>
 
 //routers
 #include <routers/employee_position_router.h>
@@ -50,5 +56,7 @@
 #include <routers/product_type_router.h>
 #include <routers/product_router.h>
 #include <routers/supllier_router.h>
+#include <routers/inventory_transaction_type_router.h>
+#include <routers/inventory_transaction_router.h>
 
 // TODO: Reference additional headers your program requires here.

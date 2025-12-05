@@ -10,6 +10,8 @@ int main()
     std::shared_ptr<IRouter<ProductType>> product_type_router;
     std::shared_ptr<IRouter<Product>> product_router;
     std::shared_ptr<IRouter<Supplier>> supplier_router;
+    std::shared_ptr<IRouter<InventoryTransactionType>> inventory_transaction_type_router;
+    std::shared_ptr<IRouter<InventoryTransaction>> inventory_transaction_router;
 
     json config = [&]() {
         std::ifstream file(std::string(CONFIGS_DIR) + "/db_config.json");
@@ -112,10 +114,14 @@ int main()
             std::make_shared<EmployeeAccountRepository>(db_session);
         std::shared_ptr<IRepository<ProductType>> product_type_repo =
             std::make_shared<ProductTypeRepository>(db_session);
-        std::shared_ptr<IRepository<Product>> product_repo =
+        std::shared_ptr<ProductRepository> product_repo =
             std::make_shared<ProductRepository>(db_session);
         std::shared_ptr<IRepository<Supplier>> supplier_repo =
             std::make_shared<SupplierRepository>(db_session);
+        std::shared_ptr<IRepository<InventoryTransactionType>> inventory_transaction_type_repo =
+            std::make_shared<InventoryTransactionTypeRepository>(db_session);
+        std::shared_ptr<IRepository<InventoryTransaction>> inventory_transaction_repo =
+            std::make_shared<InventoryTransactionRepository>(db_session);
 
         std::shared_ptr<IService<EmployeePosition>> employee_position_service =
             std::make_shared<BaseService<EmployeePosition>>(employee_position_repo);
@@ -125,10 +131,14 @@ int main()
             std::make_shared<BaseService<EmployeeAccount>>(employee_account_repo);
         std::shared_ptr<IService<ProductType>> product_type_service =
             std::make_shared<BaseService<ProductType>>(product_type_repo);
-        std::shared_ptr<IService<Product>> product_service =
-            std::make_shared<BaseService<Product>>(product_repo);
+        std::shared_ptr<ProductService> product_service =
+            std::make_shared<ProductService>(product_repo);
         std::shared_ptr<IService<Supplier>> supplier_service =
             std::make_shared<BaseService<Supplier>>(supplier_repo);
+        std::shared_ptr<IService<InventoryTransactionType>> inventory_transaction_type_service =
+            std::make_shared<BaseService<InventoryTransactionType>>(inventory_transaction_type_repo);
+        std::shared_ptr<IService<InventoryTransaction>> inventory_transaction_service =
+            std::make_shared<InventoryTransactionService>(inventory_transaction_repo, product_service);
 
         std::shared_ptr<IController<EmployeePosition>> employee_position_controller =
             std::make_shared<EmployeePositionController>(employee_position_service);
@@ -142,6 +152,10 @@ int main()
             std::make_shared<ProductController>(product_service);
         std::shared_ptr<IController<Supplier>> supplier_controller =
             std::make_shared<SupplierController>(supplier_service);
+        std::shared_ptr<IController<InventoryTransactionType>> inventory_transaction_type_controller =
+            std::make_shared<InventoryTransactionTypeController>(inventory_transaction_type_service);
+        std::shared_ptr<IController<InventoryTransaction>> inventory_transaction_controller =
+            std::make_shared<InventoryTransactionController>(inventory_transaction_service);
 
         employee_position_router =
             std::make_shared<EmployeePositionRouter>(employee_position_controller);
@@ -155,6 +169,10 @@ int main()
             std::make_shared<ProductRouter>(product_controller);
         supplier_router =
             std::make_shared<SupplierRouter>(supplier_controller);
+        inventory_transaction_type_router =
+            std::make_shared<InventoryTransactionTypeRouter>(inventory_transaction_type_controller);
+        inventory_transaction_router =
+            std::make_shared<InventoryTransactionRouter>(inventory_transaction_controller);
 
         employee_position_router->register_routes(app);
         employee_router->register_routes(app);
@@ -162,6 +180,8 @@ int main()
         product_type_router->register_routes(app);
         product_router->register_routes(app);
         supplier_router->register_routes(app);
+        inventory_transaction_type_router->register_routes(app);
+        inventory_transaction_router->register_routes(app);
 
         // Запуск сервера на порті 8080
         app.port(8080).multithreaded().run();

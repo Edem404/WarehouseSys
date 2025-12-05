@@ -238,7 +238,7 @@ const AddEmployeeModal = ({ isOpen, onClose }) => {
     );
 };
 
-// --- NEW MODAL: ADD SUPPLIER ---
+// --- MODAL: ADD SUPPLIER ---
 const AddSupplierModal = ({ isOpen, onClose }) => {
     const [formData, setFormData] = useState({
         name: '',
@@ -311,7 +311,7 @@ const AddSupplierModal = ({ isOpen, onClose }) => {
     );
 };
 
-// --- NEW MODAL: ADD PRODUCT TYPE ---
+// --- MODAL: ADD PRODUCT TYPE ---
 const AddProductTypeModal = ({ isOpen, onClose }) => {
     const [formData, setFormData] = useState({
         type_name: ''
@@ -372,12 +372,75 @@ const AddProductTypeModal = ({ isOpen, onClose }) => {
     );
 };
 
+// --- NEW MODAL: ADD INVENTORY TRANSACTION TYPE ---
+const AddInventoryTransactionTypeModal = ({ isOpen, onClose }) => {
+    const [formData, setFormData] = useState({
+        type_name: ''
+    });
+
+    if (!isOpen) return null;
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async () => {
+        if (!formData.type_name) {
+            alert("Please fill the transaction type name");
+            return;
+        }
+
+        const payload = {
+            type_name: formData.type_name
+        };
+
+        try {
+            const response = await fetch('http://localhost:8080/inventory_transaction_types', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+
+            if (response.ok) {
+                alert("Transaction Type added successfully!");
+                onClose();
+                setFormData({ type_name: '' });
+            } else {
+                const errorData = await response.json(); 
+                alert(`Error: ${errorData.message || 'Failed to add transaction type'}`);
+            }
+        } catch (error) {
+            console.error("Error adding transaction type:", error);
+            alert("Failed to connect to server.");
+        }
+    };
+
+    return (
+        <ModalOverlay onClick={onClose}>
+            <ModalContent onClick={(e) => e.stopPropagation()}>
+                <ModalTitle>Add Transaction Type</ModalTitle>
+                <FormGroup>
+                    <Label>Transaction Type Name:</Label>
+                    <Input type="text" name="type_name" value={formData.type_name} onChange={handleChange} placeholder="e.g. Restock" />
+                </FormGroup>
+                <ModalButtons>
+                    <CancelButton onClick={onClose}>Cancel</CancelButton>
+                    <SubmitButton onClick={handleSubmit}>Confirm</SubmitButton>
+                </ModalButtons>
+            </ModalContent>
+        </ModalOverlay>
+    );
+};
+
+
 // --- DASHBOARD COMPONENT ---
 const AdminDashboard = ({ 
     onOpenRegister, 
     onOpenAddEmployee,
     onOpenAddSupplier,
-    onOpenAddProductType 
+    onOpenAddProductType,
+    onOpenAddInventoryTransactionType // New handler
 }) => (
     <>
       <SectionTitle>Admin Dashboard</SectionTitle>
@@ -401,6 +464,10 @@ const AdminDashboard = ({
 
               <ActionButton onClick={onOpenAddProductType} style={{backgroundColor: '#16a085'}}>
                   + Add Product Type
+              </ActionButton>
+
+              <ActionButton onClick={onOpenAddInventoryTransactionType} style={{backgroundColor: '#34495e'}}>
+                  + Add Transaction Type
               </ActionButton>
           </ActionButtonsContainer>
 
@@ -435,6 +502,7 @@ const AdminPage = () => {
   const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
   const [isAddSupplierModalOpen, setIsAddSupplierModalOpen] = useState(false);
   const [isAddProductTypeModalOpen, setIsAddProductTypeModalOpen] = useState(false);
+  const [isAddInventoryTransactionTypeModalOpen, setIsAddInventoryTransactionTypeModalOpen] = useState(false); // New State
 
   const isEmployeesPage = location.pathname.includes('/employees');
   const isPositionsPage = location.pathname.includes('/positions');
@@ -455,6 +523,7 @@ const AdminPage = () => {
                 onOpenAddEmployee={() => setIsAddEmployeeModalOpen(true)}
                 onOpenAddSupplier={() => setIsAddSupplierModalOpen(true)}
                 onOpenAddProductType={() => setIsAddProductTypeModalOpen(true)}
+                onOpenAddInventoryTransactionType={() => setIsAddInventoryTransactionTypeModalOpen(true)}
             />
         )}
 
@@ -479,6 +548,11 @@ const AdminPage = () => {
       <AddProductTypeModal
           isOpen={isAddProductTypeModalOpen}
           onClose={() => setIsAddProductTypeModalOpen(false)}
+      />
+
+      <AddInventoryTransactionTypeModal
+          isOpen={isAddInventoryTransactionTypeModalOpen}
+          onClose={() => setIsAddInventoryTransactionTypeModalOpen(false)}
       />
 
     </PageContainer>

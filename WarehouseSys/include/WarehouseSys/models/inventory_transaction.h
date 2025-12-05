@@ -1,21 +1,22 @@
 #pragma once
 
 #include "i_dto.h"
-#include "product_type.h"
+#include <chrono>
+#include <iomanip>
+#include <sstream>
 
-class Product : public IDTO {
+class InventoryTransaction : public IDTO {
 private:
 	int id{};
-	std::string name;
-	std::string article;
-	int quantity{};
-	double price{};
-	int product_type_id{};
-	int supplier_id{};
-	int min_quantity_threshold{};
+	int product_id{};
+	int transaction_type_id{};
+	int employee_id{};
+	int quantity_change{};
+	std::chrono::system_clock::time_point timestamp{};
 public:
 	static const std::string TABLE_NAME;
 
+	//dto methods
 	void from_db_row(const IDBRow& row) override;
 	nlohmann::json to_json() const override;
 	void from_json(nlohmann::json json_data) override;

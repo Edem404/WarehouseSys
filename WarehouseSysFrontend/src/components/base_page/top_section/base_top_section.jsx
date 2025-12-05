@@ -55,12 +55,12 @@ const BaseTopSection = () => {
   return (
     <HeaderContainer>
 
-      {/* Бургер кнопка */}
+      {/* Burger Button */}
       <BurgerWrapper onClick={() => setMenuOpen(prev => !prev)}>
         ☰
       </BurgerWrapper>
 
-      {/* Меню */}
+      {/* Menu */}
       {menuOpen && (
         <BurgerMenu>
 
@@ -70,7 +70,17 @@ const BaseTopSection = () => {
               setMenuOpen(false);
             }}
           >
-            Список товарів
+            Product List
+          </BurgerMenuItem>
+
+          {/* --- NEW BUTTON HERE --- */}
+          <BurgerMenuItem
+            onClick={() => {
+              navigate('/main/base/transactions'); // Path to history
+              setMenuOpen(false);
+            }}
+          >
+            Transaction History
           </BurgerMenuItem>
 
           <BurgerMenuItem
@@ -79,13 +89,13 @@ const BaseTopSection = () => {
               setMenuOpen(false);
             }}
           >
-            Звіти
+            Reports
           </BurgerMenuItem>
 
         </BurgerMenu>
       )}
 
-      {/* Лого */}
+      {/* Logo */}
       <Logo onClick={() => navigate('/main')}>
         WarehouseSys
       </Logo>
@@ -100,7 +110,7 @@ const BaseTopSection = () => {
 
         <NavButton 
             $isBack 
-            onClick={() => navigate('/main')}
+            onClick={() => navigate(-1)}
         >
           ← Back
         </NavButton>
