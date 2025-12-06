@@ -19,4 +19,5 @@ public:
     }
 
 	InventoryTransaction create(InventoryTransaction& transaction) override;
+    nlohmann::json create_with_notification(InventoryTransaction& transaction);
 };

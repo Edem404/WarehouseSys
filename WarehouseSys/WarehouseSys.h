@@ -59,4 +59,10 @@
 #include <routers/inventory_transaction_type_router.h>
 #include <routers/inventory_transaction_router.h>
 
+//notifications
+#include <notifications/i_stock_observer.h>
+#include <notifications/logging_stock_observer.h>
+#include <notifications/low_stock_event.h>
+#include <notifications/stock_event_dispatcher.h>
+
 // TODO: Reference additional headers your program requires here.

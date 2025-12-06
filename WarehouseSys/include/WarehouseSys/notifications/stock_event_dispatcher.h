@@ -2,17 +2,25 @@
 
 #include "i_stock_observer.h"
 #include <vector>
+#include <memory>
 
 class StockEventDispatcher {
-    std::vector<IStockObserver*> observers;
+    std::vector<std::weak_ptr<IStockObserver>> observers;
 
 public:
-    void subscribe(IStockObserver* observer) {
+    void subscribe(std::shared_ptr<IStockObserver> observer) {
         observers.push_back(observer);
     }
 
     void notify_low_stock(const LowStockEvent& event) {
-        for (auto* obs : observers)
-            obs->on_low_stock(event);
+        for (auto it = observers.begin(); it != observers.end(); ) {
+            if (auto obs = it->lock()) {
+                obs->on_low_stock(event);
+                ++it;
+            }
+            else {
+                it = observers.erase(it);
+            }
+        }
     }
 };

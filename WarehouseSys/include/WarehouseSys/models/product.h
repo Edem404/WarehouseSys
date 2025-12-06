@@ -20,5 +20,9 @@ public:
 	nlohmann::json to_json() const override;
 	void from_json(nlohmann::json json_data) override;
 	std::map<std::string, DBValue> as_map() const override;
+
+	int get_id() const { return id; }
+	int get_quantity() const { return quantity; }
+	int get_min_quantity_threshold() const { return min_quantity_threshold; }
 protected:
 };

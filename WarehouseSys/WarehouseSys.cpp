@@ -4,6 +4,8 @@ using json = nlohmann::json;
 
 int main()
 {
+    auto dispatcher = std::make_shared<StockEventDispatcher>();
+
     std::shared_ptr<IRouter<EmployeePosition>> employee_position_router;
     std::shared_ptr<IRouter<Employee>> employee_router;
     std::shared_ptr<IRouter<EmployeeAccount>> employee_account_router;
@@ -106,6 +108,7 @@ int main()
             return crow::response(result.dump(4));
         });
 
+        //repositories
         std::shared_ptr<IRepository<EmployeePosition>> employee_position_repo =
             std::make_shared<EmployeePositionRepository>(db_session);
         std::shared_ptr<IRepository<Employee>> employee_repo =
@@ -123,6 +126,7 @@ int main()
         std::shared_ptr<IRepository<InventoryTransaction>> inventory_transaction_repo =
             std::make_shared<InventoryTransactionRepository>(db_session);
 
+        //services
         std::shared_ptr<IService<EmployeePosition>> employee_position_service =
             std::make_shared<BaseService<EmployeePosition>>(employee_position_repo);
         std::shared_ptr<IService<Employee>> employee_service =
@@ -132,7 +136,7 @@ int main()
         std::shared_ptr<IService<ProductType>> product_type_service =
             std::make_shared<BaseService<ProductType>>(product_type_repo);
         std::shared_ptr<ProductService> product_service =
-            std::make_shared<ProductService>(product_repo);
+            std::make_shared<ProductService>(product_repo, dispatcher);
         std::shared_ptr<IService<Supplier>> supplier_service =
             std::make_shared<BaseService<Supplier>>(supplier_repo);
         std::shared_ptr<IService<InventoryTransactionType>> inventory_transaction_type_service =
@@ -140,6 +144,7 @@ int main()
         std::shared_ptr<IService<InventoryTransaction>> inventory_transaction_service =
             std::make_shared<InventoryTransactionService>(inventory_transaction_repo, product_service);
 
+        //controllers
         std::shared_ptr<IController<EmployeePosition>> employee_position_controller =
             std::make_shared<EmployeePositionController>(employee_position_service);
         std::shared_ptr<IController<Employee>> employee_controller =
@@ -156,6 +161,10 @@ int main()
             std::make_shared<InventoryTransactionTypeController>(inventory_transaction_type_service);
         std::shared_ptr<IController<InventoryTransaction>> inventory_transaction_controller =
             std::make_shared<InventoryTransactionController>(inventory_transaction_service);
+          
+        //routers
+        auto stock_logger = std::make_shared<LoggingStockObserver>();
+        dispatcher->subscribe(stock_logger);
 
         employee_position_router =
             std::make_shared<EmployeePositionRouter>(employee_position_controller);
