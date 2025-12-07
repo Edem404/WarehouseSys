@@ -217,6 +217,7 @@ const InventoryTransactionModal = ({ isOpen, onClose, product, type, onRefresh }
     let btnColor = '';
     let transactionTypeId = 0; 
 
+    // Константи ID (мають співпадати з вашою БД)
     const ID_WRITEOFF = 1;
     const ID_RECEIPT = 2;
     const ID_SHIPMENT = 3; 
@@ -273,20 +274,45 @@ const InventoryTransactionModal = ({ isOpen, onClose, product, type, onRefresh }
         };
 
         try {
-            const response = await fetch("http://localhost:8080/inventory_transactions", {
+            const response = await fetch("http://localhost:8080/inventory_transactions/create_w_notify", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),
             });
 
+            // 1. Читаємо JSON один раз
+            const responseData = await response.json();
+            
+            console.log("Server Response:", responseData); // Для відладки
+
+            // 2. Спочатку перевіряємо, чи є сповіщення про залишки
+            if (responseData.stock_notification) {
+                const note = responseData.stock_notification;
+                alert(`⚠️ WARNING: STOCK ALERT!\n\n` +
+                      `Type: ${note.type}\n` +
+                      `Quantity Change: ${note.quantity_change}`);
+            }
+
+            // 3. Перевіряємо успішність операції
             if (response.ok) {
-                alert("Transaction successful!");
+                // Якщо сповіщення не було, показуємо звичайний успіх
+                if (!responseData.stock_notification) {
+                    alert("Transaction successful!");
+                }
+                
                 onClose();
                 setQuantity('');
                 onRefresh();
             } else {
-                const errorData = await response.json();
-                alert(`Error: ${errorData.message || 'Transaction failed'}`);
+                // Якщо була помилка, але не пов'язана з stock_notification (або якщо stock_notification прийшов з помилкою)
+                if (!responseData.stock_notification) {
+                    alert(`Error: ${responseData.message || 'Transaction failed'}`);
+                } else {
+                    // Якщо прийшло сповіщення і статус не ОК, ми вже показали alert вище, 
+                    // але треба все одно оновити сторінку, бо транзакція могла пройти частково або змінити стан
+                    onClose();
+                    onRefresh();
+                }
             }
         } catch (error) {
             console.error("Transaction error:", error);
@@ -309,7 +335,7 @@ const InventoryTransactionModal = ({ isOpen, onClose, product, type, onRefresh }
                         type="number" 
                         value={quantity} 
                         onChange={(e) => setQuantity(e.target.value)} 
-                        placeholder="Enter quantity (positive number)"
+                        placeholder="Enter quantity"
                         autoFocus
                         min="1"
                     />
@@ -328,7 +354,6 @@ const InventoryTransactionModal = ({ isOpen, onClose, product, type, onRefresh }
         </ModalOverlay>
     );
 };
-
 // --- ГОЛОВНА СТОРІНКА ---
 export default function ProductsPage() {
   const [products, setProducts] = useState([]);

@@ -26,7 +26,7 @@ nlohmann::json InventoryTransactionService::create_with_notification(InventoryTr
         result["stock_notification"] = {
             {"type", "low_stock"},
             {"product_id", product_id},
-            {"current_quantity", quantity_change}
+            {"quantity_change", quantity_change}
         };
     }
 
