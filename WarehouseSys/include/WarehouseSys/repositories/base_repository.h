@@ -100,7 +100,7 @@ T BaseRepository<T>::create(T& item) {
             else if constexpr (std::is_same_v<V, std::nullptr_t>)
                 to_sql_value = "NULL";
             else if constexpr (std::is_same_v<V, bool>)
-                to_sql_value = v ? "1" : "0";
+                to_sql_value = v ? "true" : "false";
             else
                 to_sql_value = std::to_string(v);
         }, value);

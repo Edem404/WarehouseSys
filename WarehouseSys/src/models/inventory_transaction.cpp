@@ -26,6 +26,8 @@ namespace {
 void InventoryTransaction::from_db_row(const IDBRow& row) {
     if (auto val = row.get<int>("id")) id = *val;
     if (auto val = row.get<int>("product_id")) product_id = *val;
+    if (auto val = row.get<int>("supplier_id")) supplier_id = *val;
+    else supplier_id = std::nullopt;
     if (auto val = row.get<int>("transaction_type_id")) transaction_type_id = *val;
     if (auto val = row.get<int>("employee_id")) employee_id = *val;
     if (auto val = row.get<int>("quantity_change")) quantity_change = *val;
@@ -33,7 +35,7 @@ void InventoryTransaction::from_db_row(const IDBRow& row) {
 }
 
 nlohmann::json InventoryTransaction::to_json() const {
-    return {
+    nlohmann::json j = {
         {"id", id},
         {"product_id", product_id},
         {"transaction_type_id", transaction_type_id},
@@ -41,10 +43,23 @@ nlohmann::json InventoryTransaction::to_json() const {
         {"quantity_change", quantity_change},
         {"timestamp", time_point_to_string(timestamp)}
     };
+    if (supplier_id.has_value()) {
+        j["supplier_id"] = *supplier_id;
+    }
+    else {
+        j["supplier_id"] = nullptr;
+    }
+    return j;
 }
 
 void InventoryTransaction::from_json(nlohmann::json json_data) {
     product_id = json_data.at("product_id").get<int>();
+    if (json_data.contains("supplier_id") && !json_data["supplier_id"].is_null()) {
+        supplier_id = json_data["supplier_id"].get<int>();
+    }
+    else {
+        supplier_id = std::nullopt;
+    }
     transaction_type_id = json_data.at("transaction_type_id").get<int>();
     employee_id = json_data.at("employee_id").get<int>();
     quantity_change = json_data.at("quantity_change").get<int>();
@@ -57,7 +72,7 @@ void InventoryTransaction::from_json(nlohmann::json json_data) {
 }
 
 std::map<std::string, DBValue> InventoryTransaction::as_map() const {
-    return {
+    std::map<std::string, DBValue> m{
         {"id", id},
         {"product_id", product_id},
         {"transaction_type_id", transaction_type_id},
@@ -65,4 +80,11 @@ std::map<std::string, DBValue> InventoryTransaction::as_map() const {
         {"quantity_change", quantity_change},
         {"timestamp", time_point_to_string(timestamp)}
     };
+    if (supplier_id.has_value()) {
+        m["supplier_id"] = *supplier_id;
+    }
+    else {
+        m["supplier_id"] = nullptr;
+    }
+    return m;
 }

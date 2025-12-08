@@ -73,14 +73,23 @@ const BaseTopSection = () => {
             Product List
           </BurgerMenuItem>
 
-          {/* --- NEW BUTTON HERE --- */}
           <BurgerMenuItem
             onClick={() => {
-              navigate('/main/base/transactions'); // Path to history
+              navigate('/main/base/transactions');
               setMenuOpen(false);
             }}
           >
             Transaction History
+          </BurgerMenuItem>
+
+          {/* --- NEW BUTTON: SUPPLIERS --- */}
+          <BurgerMenuItem
+            onClick={() => {
+              navigate('/main/base/suppliers');
+              setMenuOpen(false);
+            }}
+          >
+            Suppliers
           </BurgerMenuItem>
 
           <BurgerMenuItem

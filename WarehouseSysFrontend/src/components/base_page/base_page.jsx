@@ -3,9 +3,9 @@ import { useLocation } from 'react-router-dom';
 import BaseTopSection from './top_section/base_top_section';
 import ProductsPage from './product_page/product_page';
 
-// 1. Імпортуємо нову сторінку історії транзакцій
-// (Переконайтеся, що шлях відповідає тому, де ви створили файл)
+// Імпорти сторінок
 import TransactionHistoryPage from './transaction_history_page/transaction_history_page';
+import SuppliersPage from './suppliers_page/suppliers_page';
 
 import { 
   PageContainer, 
@@ -15,16 +15,17 @@ import {
 } from './base_page.styled';
 
 const BasePage = () => {
-  const location = useLocation(); // Отримуємо поточний URL
+  const location = useLocation(); 
 
   // Логіка визначення, яку сторінку показувати
   const isProductsPage = location.pathname.includes('/products');
   const isReportsPage = location.pathname.includes('/reports');
-  
-  // 2. Додаємо перевірку: чи ми на сторінці транзакцій
   const isTransactionsPage = location.pathname.includes('/transactions');
+  
+  // 2. Додаємо перевірку шляху для постачальників
+  const isSuppliersPage = location.pathname.includes('/suppliers');
 
-  // Виносимо стандартний контент (Дашборд) в окрему змінну для чистоти
+  // Виносимо стандартний контент (Дашборд) в окрему змінну
   const DashboardContent = () => (
     <>
       <SectionTitle>Base Operations</SectionTitle>
@@ -53,7 +54,6 @@ const BasePage = () => {
 
   return (
     <PageContainer>
-      {/* Header завжди на місці */}
       <BaseTopSection />
 
       <MainContent>
@@ -63,11 +63,13 @@ const BasePage = () => {
         
         {isReportsPage && <ReportsStub />}
 
-        {/* 3. Відображаємо історію транзакцій, якщо обрано цей пункт меню */}
         {isTransactionsPage && <TransactionHistoryPage />}
+
+        {/* 3. Рендеримо сторінку постачальників */}
+        {isSuppliersPage && <SuppliersPage />}
         
-        {/* Якщо не товари, не звіти і не транзакції - показуємо дашборд */}
-        {!isProductsPage && !isReportsPage && !isTransactionsPage && <DashboardContent />}
+        {/* Оновлена умова: показуємо дашборд, якщо жодна з інших сторінок не активна */}
+        {!isProductsPage && !isReportsPage && !isTransactionsPage && !isSuppliersPage && <DashboardContent />}
 
       </MainContent>
     </PageContainer>

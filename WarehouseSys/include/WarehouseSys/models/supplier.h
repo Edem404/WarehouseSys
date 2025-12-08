@@ -8,6 +8,8 @@ private:
 	std::string name;
 	std::string phone_number;
 	std::string email;
+	bool is_active{};
+
 public:
 	static const std::string TABLE_NAME;
 

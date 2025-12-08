@@ -268,6 +268,7 @@ const InventoryTransactionModal = ({ isOpen, onClose, product, type, onRefresh }
 
         const payload = {
             product_id: product.id,
+            supplier_id: product.supplier_id,
             transaction_type_id: transactionTypeId,
             employee_id: parseInt(storedEmployeeId),
             quantity_change: qtyChange

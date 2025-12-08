@@ -9,6 +9,7 @@ class InventoryTransaction : public IDTO {
 private:
 	int id{};
 	int product_id{};
+	std::optional<int> supplier_id;
 	int transaction_type_id{};
 	int employee_id{};
 	int quantity_change{};

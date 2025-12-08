@@ -1,0 +1,1 @@
+#include "WarehouseSys/services/reports/report_objects/base_report.h"
