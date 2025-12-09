@@ -26,7 +26,6 @@ export default function TransactionHistoryPage() {
             const supData = await supRes.json();
 
             // 2. Створюємо мапу постачальників для швидкого доступу
-            // Перетворюємо [{id: 1, name: "Global"}, ...] в { 1: "Global", ... }
             const map = {};
             if (Array.isArray(supData)) {
                 supData.forEach(sup => {
@@ -88,7 +87,7 @@ export default function TransactionHistoryPage() {
                   <th>ID</th>
                   <th>Product ID</th>
                   <th>Type</th>
-                  <th>Supplier</th> {/* Нова колонка */}
+                  <th>Supplier</th>
                   <th>Employee (ID)</th>
                   
                   <th 
@@ -100,6 +99,7 @@ export default function TransactionHistoryPage() {
                   </th>
                   
                   <th>Change</th>
+                  <th>Qty After</th> {/* Нова колонка */}
                 </tr>
               </thead>
               <tbody>
@@ -120,7 +120,6 @@ export default function TransactionHistoryPage() {
                            item.transaction_type_id === 3 ? 'Shipment' : item.transaction_type_id}
                       </td>
 
-                      {/* Відображаємо Ім'я постачальника або прочерк */}
                       <td style={{ fontStyle: item.supplier_id ? 'normal' : 'italic', color: item.supplier_id ? 'black' : '#000000ff' }}>
                           {supplierName || `ID: ${item.supplier_id}`}
                       </td>
@@ -134,6 +133,12 @@ export default function TransactionHistoryPage() {
                             {isPositive ? '+' : ''}{item.quantity_change}
                         </QuantityText>
                       </td>
+
+                      {/* Відображення залишку після транзакції */}
+                      <td style={{ fontWeight: 'bold', color: '#2c3e50' }}>
+                          {item.quantity_after}
+                      </td>
+
                     </TransactionRow>
                   );
                 })}

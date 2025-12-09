@@ -31,6 +31,7 @@ void InventoryTransaction::from_db_row(const IDBRow& row) {
     if (auto val = row.get<int>("transaction_type_id")) transaction_type_id = *val;
     if (auto val = row.get<int>("employee_id")) employee_id = *val;
     if (auto val = row.get<int>("quantity_change")) quantity_change = *val;
+    if (auto val = row.get<int>("quantity_after")) quantity_after = *val;
     if (auto val = row.get<std::chrono::system_clock::time_point>("timestamp")) timestamp = *val;
 }
 
@@ -41,6 +42,7 @@ nlohmann::json InventoryTransaction::to_json() const {
         {"transaction_type_id", transaction_type_id},
         {"employee_id", employee_id},
         {"quantity_change", quantity_change},
+        {"quantity_after", quantity_after},
         {"timestamp", time_point_to_string(timestamp)}
     };
     if (supplier_id.has_value()) {
@@ -63,6 +65,7 @@ void InventoryTransaction::from_json(nlohmann::json json_data) {
     transaction_type_id = json_data.at("transaction_type_id").get<int>();
     employee_id = json_data.at("employee_id").get<int>();
     quantity_change = json_data.at("quantity_change").get<int>();
+    quantity_after = json_data.at("quantity_after").get<int>();
     if (json_data.contains("timestamp")) {
         timestamp = string_to_time_point(json_data.at("timestamp").get<std::string>());
     }
@@ -78,6 +81,7 @@ std::map<std::string, DBValue> InventoryTransaction::as_map() const {
         {"transaction_type_id", transaction_type_id},
         {"employee_id", employee_id},
         {"quantity_change", quantity_change},
+        {"quantity_after", quantity_after},
         {"timestamp", time_point_to_string(timestamp)}
     };
     if (supplier_id.has_value()) {

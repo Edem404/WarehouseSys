@@ -18,5 +18,11 @@ public:
 	nlohmann::json to_json() const override;
 	void from_json(nlohmann::json json_data) override;
 	std::map<std::string, DBValue> as_map() const override;
+
+	int get_id() { return id; }
+	std::string get_name() { return name; }
+	std::string get_surname() { return surname; }
+	int get_position_id() { return position_id; }
+
 protected:
 };
