@@ -25,6 +25,10 @@ void InvoiceReport::compose_body(std::shared_ptr<IFormatter> formatter, const Do
         }
         else {
             row.push_back("Deleted Product");
+            row.push_back("-");
+            row.push_back("-");
+            row.push_back("-");
+            row.push_back("-");
         }
         rows.push_back(row);
     }

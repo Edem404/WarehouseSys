@@ -1,11 +1,13 @@
 #pragma once
+
 #include <vector>
+#include "i_dto.h"
 #include "models/product.h"
 #include "models/inventory_transaction.h"
 #include "models/supplier.h"
 #include "models/employee.h"
 
-class DocumentData {
+class DocumentData : public IDTO {
 private:
     std::string document_title;
     std::string generated_date;
@@ -35,4 +37,9 @@ public:
         if (it != products.end()) return &(*it);
         return nullptr;
     }
+
+    void from_db_row(const IDBRow& row) override {}
+    nlohmann::json to_json() const override { return {}; }
+    void from_json(nlohmann::json json_data) override {}
+    std::map<std::string, DBValue> as_map() const override { return {}; }
 };
