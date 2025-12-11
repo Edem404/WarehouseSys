@@ -38,6 +38,7 @@
 #include <services/supplier_service.h>
 #include <services/inventory_transaction_type_service.h>
 #include <services/inventory_transaction_service.h>
+#include <services/report_service.h>
 
 //controllers
 #include <controllers/employee_position_controller.h>
@@ -48,6 +49,7 @@
 #include <controllers/supplier_controller.h>
 #include <controllers/inventory_transaction_type_controller.h>
 #include <controllers/inventory_transaction_controller.h>
+#include <controllers/invoice_controller.h>
 
 //routers
 #include <routers/employee_position_router.h>
@@ -58,6 +60,7 @@
 #include <routers/supllier_router.h>
 #include <routers/inventory_transaction_type_router.h>
 #include <routers/inventory_transaction_router.h>
+#include <routers/invoice_router.h>
 
 //notifications
 #include <notifications/i_stock_observer.h>

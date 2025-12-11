@@ -1,7 +1,7 @@
 #include "WarehouseSys/routers/invoice_router.h"
 
 void InvoiceRouter::register_routes(crow::App<crow::CORSHandler>& app) {
-    CROW_ROUTE(app, "/invoice/create/<int>")
+    CROW_ROUTE(app, "/invoice/create/<int>").methods("POST"_method)
         ([this](int transaction_id) {
         try {
             std::string html = invoice_controller_->generate_invoice(transaction_id);

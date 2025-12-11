@@ -37,7 +37,18 @@ void HTMLFormatter::add_table(const std::vector<std::string>& headers,
     for (const auto& row : rows) {
         ss << "<tr>";
         for (const auto& cell : row) {
-            ss << "<td>" << cell << "</td>";
+
+            std::ostringstream cell_stream;
+            double number;
+
+            if (std::istringstream(cell) >> number) {
+                cell_stream << std::fixed << std::setprecision(2) << number;
+            }
+            else {
+                cell_stream << cell;
+            }
+
+            ss << "<td>" << cell_stream.str() << "</td>";
         }
         ss << "</tr>";
     }

@@ -14,6 +14,7 @@ int main()
     std::shared_ptr<IRouter<Supplier>> supplier_router;
     std::shared_ptr<IRouter<InventoryTransactionType>> inventory_transaction_type_router;
     std::shared_ptr<IRouter<InventoryTransaction>> inventory_transaction_router;
+    std::shared_ptr<InvoiceRouter> invoice_router;
 
     json config = [&]() {
         std::ifstream file(std::string(CONFIGS_DIR) + "/db_config.json");
@@ -143,6 +144,8 @@ int main()
             std::make_shared<BaseService<InventoryTransactionType>>(inventory_transaction_type_repo);
         std::shared_ptr<IService<InventoryTransaction>> inventory_transaction_service =
             std::make_shared<InventoryTransactionService>(inventory_transaction_repo, product_service);
+        std::shared_ptr<ReportService> report_service =
+            std::make_shared<ReportService>(inventory_transaction_repo, product_repo, supplier_repo, employee_repo);
 
         //controllers
         std::shared_ptr<IController<EmployeePosition>> employee_position_controller =
@@ -161,11 +164,14 @@ int main()
             std::make_shared<InventoryTransactionTypeController>(inventory_transaction_type_service);
         std::shared_ptr<IController<InventoryTransaction>> inventory_transaction_controller =
             std::make_shared<InventoryTransactionController>(inventory_transaction_service);
+        std::shared_ptr<InvoiceController> invoice_controller =
+            std::make_shared<InvoiceController>(report_service);
           
-        //routers
+
         auto stock_logger = std::make_shared<LoggingStockObserver>();
         dispatcher->subscribe(stock_logger);
 
+        //routers
         employee_position_router =
             std::make_shared<EmployeePositionRouter>(employee_position_controller);
         employee_router =
@@ -182,6 +188,8 @@ int main()
             std::make_shared<InventoryTransactionTypeRouter>(inventory_transaction_type_controller);
         inventory_transaction_router =
             std::make_shared<InventoryTransactionRouter>(inventory_transaction_controller);
+        invoice_router = 
+            std::make_shared<InvoiceRouter>(invoice_controller);
 
         employee_position_router->register_routes(app);
         employee_router->register_routes(app);
@@ -191,6 +199,7 @@ int main()
         supplier_router->register_routes(app);
         inventory_transaction_type_router->register_routes(app);
         inventory_transaction_router->register_routes(app);
+        invoice_router->register_routes(app);
 
         // Запуск сервера на порті 8080
         app.port(8080).multithreaded().run();

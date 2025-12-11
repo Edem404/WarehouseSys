@@ -43,12 +43,26 @@ private:
 
 public:
     ReportService(
-        std::shared_ptr<InventoryTransactionRepository> transRepo,
-        std::shared_ptr<ProductRepository> prodRepo,
-        std::shared_ptr<SupplierRepository> supRepo,
-        std::shared_ptr<EmployeeRepository> empRepo
-    ) : _transaction_repository(transRepo), _product_repository(prodRepo),
-        _supplier_repository(supRepo), _employee_repository(empRepo) {
+        std::shared_ptr<IRepository<InventoryTransaction>> trans_repo_iface,
+        std::shared_ptr<IRepository<Product>> prod_repo_iface,
+        std::shared_ptr<IRepository<Supplier>> sup_repo_iface,
+        std::shared_ptr<IRepository<Employee>> emp_repo_iface
+    )
+    {
+        _transaction_repository = std::dynamic_pointer_cast<InventoryTransactionRepository>(trans_repo_iface);
+        _product_repository = std::dynamic_pointer_cast<ProductRepository>(prod_repo_iface);
+        _supplier_repository = std::dynamic_pointer_cast<SupplierRepository>(sup_repo_iface);
+        _employee_repository = std::dynamic_pointer_cast<EmployeeRepository>(emp_repo_iface);
+
+        if (!_transaction_repository ||
+            !_product_repository ||
+            !_supplier_repository ||
+            !_employee_repository)
+        {
+            throw std::runtime_error(
+                "ReportService: provided repositories have wrong type"
+            );
+        }
     }
 
     std::string generate_report_for_single_product(ReportType type, ReportFormat format, int transaction_id);
