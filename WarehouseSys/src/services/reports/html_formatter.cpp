@@ -38,17 +38,21 @@ void HTMLFormatter::add_table(const std::vector<std::string>& headers,
         ss << "<tr>";
         for (const auto& cell : row) {
 
-            std::ostringstream cell_stream;
-            double number;
+            std::string formatted = cell;
 
-            if (std::istringstream(cell) >> number) {
-                cell_stream << std::fixed << std::setprecision(2) << number;
-            }
-            else {
-                cell_stream << cell;
+            if (cell.find('.') != std::string::npos || cell.find(',') != std::string::npos) {
+
+                std::istringstream iss(cell);
+                double number;
+
+                if (iss >> number) {
+                    std::ostringstream tmp;
+                    tmp << std::fixed << std::setprecision(2) << number;
+                    formatted = tmp.str();
+                }
             }
 
-            ss << "<td>" << cell_stream.str() << "</td>";
+            ss << "<td>" << formatted << "</td>";
         }
         ss << "</tr>";
     }

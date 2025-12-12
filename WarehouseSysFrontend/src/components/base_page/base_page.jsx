@@ -6,6 +6,7 @@ import ProductsPage from './product_page/product_page';
 // Імпорти сторінок
 import TransactionHistoryPage from './transaction_history_page/transaction_history_page';
 import SuppliersPage from './suppliers_page/suppliers_page';
+import ReportsPage from './reports_page/reports_page';
 
 import { 
   PageContainer, 
@@ -61,7 +62,7 @@ const BasePage = () => {
         
         {isProductsPage && <ProductsPage />}
         
-        {isReportsPage && <ReportsStub />}
+        {isReportsPage && <ReportsPage />}
 
         {isTransactionsPage && <TransactionHistoryPage />}
 

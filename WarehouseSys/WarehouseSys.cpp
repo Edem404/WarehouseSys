@@ -15,6 +15,7 @@ int main()
     std::shared_ptr<IRouter<InventoryTransactionType>> inventory_transaction_type_router;
     std::shared_ptr<IRouter<InventoryTransaction>> inventory_transaction_router;
     std::shared_ptr<InvoiceRouter> invoice_router;
+    std::shared_ptr<ReportRouter> report_router;
 
     json config = [&]() {
         std::ifstream file(std::string(CONFIGS_DIR) + "/db_config.json");
@@ -166,6 +167,8 @@ int main()
             std::make_shared<InventoryTransactionController>(inventory_transaction_service);
         std::shared_ptr<InvoiceController> invoice_controller =
             std::make_shared<InvoiceController>(report_service);
+        std::shared_ptr<ReportController> report_controller =
+            std::make_shared<ReportController>(report_service);
           
 
         auto stock_logger = std::make_shared<LoggingStockObserver>();
@@ -190,6 +193,7 @@ int main()
             std::make_shared<InventoryTransactionRouter>(inventory_transaction_controller);
         invoice_router = 
             std::make_shared<InvoiceRouter>(invoice_controller);
+        report_router = std::make_shared<ReportRouter>(report_controller);
 
         employee_position_router->register_routes(app);
         employee_router->register_routes(app);
@@ -200,8 +204,9 @@ int main()
         inventory_transaction_type_router->register_routes(app);
         inventory_transaction_router->register_routes(app);
         invoice_router->register_routes(app);
+        report_router->register_routes(app);
 
-        // Запуск сервера на порті 8080
+        // run server on port 8080
         app.port(8080).multithreaded().run();
     }
     catch (const std::exception& e)

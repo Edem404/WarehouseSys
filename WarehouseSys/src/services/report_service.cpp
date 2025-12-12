@@ -50,8 +50,8 @@ DocumentData ReportService::prepare_document_data(int transactionId) {
 std::string ReportService::generate_report_for_single_product(ReportType type, ReportFormat format, int transaction_id)
 {
     auto formatter = create_formatter(format);
-    auto& templateStrategy = resolve_template(type);
+    auto& template_strategy = resolve_template(type);
     auto data = prepare_document_data(transaction_id);
 
-    return templateStrategy.generate(formatter, data);
+    return template_strategy.generate(formatter, data);
 }

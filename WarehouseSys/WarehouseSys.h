@@ -50,6 +50,7 @@
 #include <controllers/inventory_transaction_type_controller.h>
 #include <controllers/inventory_transaction_controller.h>
 #include <controllers/invoice_controller.h>
+#include <controllers/report_controller.h>
 
 //routers
 #include <routers/employee_position_router.h>
@@ -61,6 +62,7 @@
 #include <routers/inventory_transaction_type_router.h>
 #include <routers/inventory_transaction_router.h>
 #include <routers/invoice_router.h>
+#include <routers/report_router.h>
 
 //notifications
 #include <notifications/i_stock_observer.h>
