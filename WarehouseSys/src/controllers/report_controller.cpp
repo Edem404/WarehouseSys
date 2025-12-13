@@ -22,3 +22,24 @@ std::string ReportController::generate_report_for_single_product(json document_g
 
     return _report_service->generate_report_for_single_product(report_type, report_format, transaction_id);
 }
+
+std::string ReportController::generate_report_for_multi_product(json document_generation_params)
+{   
+    if (!document_generation_params.contains("responsible_employee_id"))
+        throw std::runtime_error("Missing required field: responsible_employee_id");
+
+    DocumentQuery report_param_query;
+
+    report_param_query.responsible_employee_id = document_generation_params.at("responsible_employee_id").get<int>();
+    
+    const std::string type_str =
+        document_generation_params.at("report_type").get<std::string>();
+
+    const std::string format_str =
+        document_generation_params.at("report_format").get<std::string>();
+
+    const ReportType report_type = parse_report_type(type_str);
+    const ReportFormat report_format = parse_report_format(format_str);
+
+    return _report_service->generate_report_for_multi_product(report_type, report_format, report_param_query);
+}

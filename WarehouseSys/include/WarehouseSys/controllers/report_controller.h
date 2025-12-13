@@ -16,4 +16,5 @@ public:
 	}
 
 	std::string generate_report_for_single_product(json document_generation_params);
+	std::string generate_report_for_multi_product(json document_generation_params);
 };

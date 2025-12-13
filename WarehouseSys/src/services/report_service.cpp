@@ -86,7 +86,7 @@ std::string ReportService::generate_report_for_multi_product(ReportType type, Re
     DocumentData data;
     data.set_generated_date(now_as_string());
 
-    auto employee_opt = _employee_repository->get_by_id(query.responible_employee_id.value());
+    auto employee_opt = _employee_repository->get_by_id(query.responsible_employee_id.value());
     if (!employee_opt.has_value())
         throw std::runtime_error("Employee not founded");
 
@@ -98,6 +98,7 @@ std::string ReportService::generate_report_for_multi_product(ReportType type, Re
 
     for (const auto& product : products) {
         data.add_product(product);
+        std::cout << product.to_json() << "\n";
     }
 
     auto formatter = create_formatter(format);

@@ -24,7 +24,7 @@
 #include "WarehouseSys/models/document_data.h"
 
 struct DocumentQuery {
-    std::optional<int> responible_employee_id;
+    std::optional<int> responsible_employee_id;
     std::optional<int> category_id;
     std::optional<int> invoice_id;
     std::optional<std::vector<int>> transaction_ids;
