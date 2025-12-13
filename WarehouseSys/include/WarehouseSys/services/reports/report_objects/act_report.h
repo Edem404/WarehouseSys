@@ -2,7 +2,7 @@
 
 #include "base_report.h"
 
-class InvoiceReport : public BaseReport {
+class ActReport : public BaseReport {
 private:
 protected:
 public:

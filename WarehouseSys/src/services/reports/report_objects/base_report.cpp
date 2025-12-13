@@ -1,9 +1,9 @@
 #include "WarehouseSys/services/reports/report_objects/base_report.h"
 #include <cmath>
 
-std::string BaseReport::generate(std::shared_ptr<IFormatter> formatter, const DocumentData& data) {
+std::string BaseReport::generate(std::shared_ptr<IFormatter> formatter, DocumentData& data) {
     formatter->start_document();
-
+    set_title(data);
     formatter->add_header(data.get_title(), data.get_generated_date());
 
     compose_body(formatter, data);

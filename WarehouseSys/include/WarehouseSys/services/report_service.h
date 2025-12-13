@@ -17,11 +17,15 @@
 #include "reports/report_objects/i_report_template.h"
 #include "reports/report_objects/base_report.h"
 #include "reports/report_objects/invoice_report.h"
+#include "reports/report_objects/act_report.h"
+#include "reports/report_objects/financial_report.h"
 #include "reports/i_formatter.h"
 #include "reports/html_formatter.h"
 #include "WarehouseSys/models/document_data.h"
 
 struct DocumentQuery {
+    std::optional<int> responible_employee_id;
+    std::optional<int> category_id;
     std::optional<int> invoice_id;
     std::optional<std::vector<int>> transaction_ids;
     std::optional<std::string> product_id;
@@ -39,7 +43,7 @@ private:
     std::shared_ptr<IFormatter> create_formatter(ReportFormat format);
     IReportTemplate& resolve_template(ReportType type);
 
-    DocumentData prepare_document_data(int transactionId);
+    DocumentData prepare_document_data(int transaction_id);
 
 public:
     ReportService(

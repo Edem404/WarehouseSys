@@ -1,14 +1,15 @@
-#include "WarehouseSys/services/reports/report_objects/invoice_report.h"
+#include "WarehouseSys/services/reports/report_objects/financial_report.h"
 
-void InvoiceReport::set_title(DocumentData& data) {
-    data.set_title("Invoice");
+void FinancialReport::set_title(DocumentData& data) {
+	data.set_title("Financial Report");
 }
 
-void InvoiceReport::compose_body(std::shared_ptr<IFormatter> formatter, DocumentData& data) {
-    // TODO: Add supplier info into invoice document
-
+void FinancialReport::compose_body(std::shared_ptr<IFormatter> formatter, DocumentData& data) {
     std::vector<std::string> headers = { "ID", "Product", "Article", "Count", "Price", "Sum" };
     std::vector<std::vector<std::string>> rows;
+
+    double all_products_sum{};
+    bool is_product_in_document{};
 
     for (const auto& t : data.get_transactions()) {
         std::vector<std::string> row;
@@ -26,6 +27,7 @@ void InvoiceReport::compose_body(std::shared_ptr<IFormatter> formatter, Document
             row.push_back(std::to_string(qty));
             row.push_back(std::to_string(p->get_price()));
             row.push_back(std::to_string(sum));
+            all_products_sum += sum;
         }
         else {
             row.push_back("Deleted Product");
@@ -36,6 +38,8 @@ void InvoiceReport::compose_body(std::shared_ptr<IFormatter> formatter, Document
         }
         rows.push_back(row);
     }
+
+
 
     formatter->add_table(headers, rows);
 }

@@ -1,10 +1,10 @@
-#include "WarehouseSys/services/reports/report_objects/invoice_report.h"
+#include "WarehouseSys/services/reports/report_objects/act_report.h"
 
-void InvoiceReport::set_title(DocumentData& data) {
-    data.set_title("Invoice");
+void ActReport::set_title(DocumentData& data) {
+    data.set_title("Act");
 }
 
-void InvoiceReport::compose_body(std::shared_ptr<IFormatter> formatter, DocumentData& data) {
+void ActReport::compose_body(std::shared_ptr<IFormatter> formatter, DocumentData& data) {
     // TODO: Add supplier info into invoice document
 
     std::vector<std::string> headers = { "ID", "Product", "Article", "Count", "Price", "Sum" };
@@ -25,7 +25,7 @@ void InvoiceReport::compose_body(std::shared_ptr<IFormatter> formatter, Document
 
             row.push_back(std::to_string(qty));
             row.push_back(std::to_string(p->get_price()));
-            row.push_back(std::to_string(sum));
+            row.push_back(std::to_string(-sum));
         }
         else {
             row.push_back("Deleted Product");

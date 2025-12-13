@@ -6,5 +6,5 @@
 
 class IReportTemplate {
 public:
-	virtual std::string generate(std::shared_ptr<IFormatter> formatter, const DocumentData& data) = 0;
+	virtual std::string generate(std::shared_ptr<IFormatter> formatter, DocumentData& data) = 0;
 };
