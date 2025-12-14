@@ -10,6 +10,7 @@ import {
   FormGroup,
   Label,
   Select,
+  Input, // Імпортуємо Input
   ModalActions,
   CancelButton,
   GenerateButton,
@@ -21,23 +22,32 @@ import {
 
 export default function ReportsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Дані
   const [transactions, setTransactions] = useState([]);
-  const [loadingTrans, setLoadingTrans] = useState(false);
+  const [products, setProducts] = useState([]); // Стан для списку продуктів
+  const [loading, setLoading] = useState(false);
 
   // Стейт форми
-  const [selectedTransId, setSelectedTransId] = useState("");
   const [reportType, setReportType] = useState("invoice"); 
+  const [selectedTransId, setSelectedTransId] = useState("");
+  
+  // Нові стейти для Product Dynamic Report
+  const [selectedProductId, setSelectedProductId] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
 
   // Результат
   const [generatedHtml, setGeneratedHtml] = useState(null);
 
-  // Отримуємо ID поточного юзера
   const currentUserId = localStorage.getItem("employeeId"); 
 
-  // Завантаження транзакцій (потрібне тільки якщо модалка відкрита і тип не фінансовий звіт)
+  // --- ЕФЕКТИ ЗАВАНТАЖЕННЯ ДАНИХ ---
+
+  // 1. Завантаження ТРАНЗАКЦІЙ (для invoice/act)
   useEffect(() => {
-    if (isModalOpen && reportType !== 'financial_report') {
-      setLoadingTrans(true);
+    if (isModalOpen && (reportType === 'invoice' || reportType === 'act')) {
+      setLoading(true);
       fetch("http://localhost:8080/inventory_transactions/all")
         .then(res => res.json())
         .then(data => {
@@ -49,52 +59,91 @@ export default function ReportsPage() {
             setTransactions(sorted);
         })
         .catch(err => console.error("Failed to load transactions", err))
-        .finally(() => setLoadingTrans(false));
+        .finally(() => setLoading(false));
     }
   }, [isModalOpen, reportType]);
 
-  // Функція для відкриття модалки з конкретним типом
+  // 2. Завантаження ПРОДУКТІВ (для product_move_dynamic)
+  useEffect(() => {
+    if (isModalOpen && reportType === 'product_move_dynamic') {
+      setLoading(true);
+      fetch("http://localhost:8080/products/all") // Переконайся, що такий ендпоінт існує
+        .then(res => res.json())
+        .then(data => {
+            // Сортуємо по назві
+            const sorted = data.sort((a, b) => a.name.localeCompare(b.name));
+            setProducts(sorted);
+        })
+        .catch(err => console.error("Failed to load products", err))
+        .finally(() => setLoading(false));
+    }
+  }, [isModalOpen, reportType]);
+
+  // Функція відкриття модалки
   const openModalWithType = (type) => {
     setReportType(type);
-    setSelectedTransId(""); // Скидаємо вибір транзакції
+    // Скидаємо всі поля при відкритті
+    setSelectedTransId("");
+    setSelectedProductId("");
+    setDateFrom("");
+    setDateTo("");
     setIsModalOpen(true);
   };
 
   const handleGenerate = async () => {
-    // Валідація: ID транзакції потрібен тільки якщо це НЕ фінансовий звіт
-    if (reportType !== "financial_report" && !selectedTransId) {
-      alert("Please select a transaction first.");
-      return;
+    let endpoint = "";
+    let requestBody = {};
+
+    // --- ЛОГІКА ДЛЯ РІЗНИХ ТИПІВ ---
+
+    if (reportType === "product_move_dynamic") {
+        // Валідація для динамічного звіту
+        if (!selectedProductId || !dateFrom || !dateTo) {
+            alert("Please select a product and specify date range.");
+            return;
+        }
+
+        endpoint = "http://localhost:8080/reports/create_dynamic_report";
+        
+        requestBody = {
+            product_id: parseInt(selectedProductId),
+            date_from: dateFrom,
+            date_to: dateTo,
+            report_type: "product_move_dynamic",
+            report_format: "html"
+        };
+
+    } else if (reportType === "financial_report") {
+        endpoint = "http://localhost:8080/reports/create_financial_product";
+        requestBody = {
+            report_type: reportType,       
+            report_format: "html",         
+            responsible_employee_id: parseInt(currentUserId, 10)
+        };
+
+    } else {
+        // Для Invoice та Act
+        if (!selectedTransId) {
+            alert("Please select a transaction first.");
+            return;
+        }
+        endpoint = "http://localhost:8080/reports/create";
+        requestBody = {
+            report_type: reportType,       
+            report_format: "html",
+            transaction_id: parseInt(selectedTransId),         
+            responsible_employee_id: parseInt(currentUserId, 10)
+        };
     }
 
+    // --- ВІДПРАВКА ЗАПИТУ ---
     try {
-      // 1. ЛОГІКА ВИБОРУ ЕНДПОІНТУ
-      let endpoint = "http://localhost:8080/reports/create"; 
-      
-      if (reportType === "financial_report") {
-          endpoint = "http://localhost:8080/reports/create_multi_product"; 
-      }
+      console.log("Sending request to:", endpoint);
+      console.log("Body:", requestBody);
 
-      // Формуємо тіло запиту
-      const requestBody = {
-        report_type: reportType,       
-        report_format: "html",         
-        responsible_employee_id: parseInt(currentUserId, 10)
-      };
-
-      console.log(requestBody)
-      
-      // Додаємо transaction_id тільки якщо це не фінансовий звіт
-      if (reportType !== "financial_report") {
-          requestBody.transaction_id = parseInt(selectedTransId);
-      }
-
-      // 2. ВИКОНАННЯ POST ЗАПИТУ
       const response = await fetch(endpoint, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
       });
       
@@ -104,7 +153,6 @@ export default function ReportsPage() {
       }
 
       const resultHtml = await response.text();
-
       setGeneratedHtml(resultHtml);
       setIsModalOpen(false); 
 
@@ -114,12 +162,13 @@ export default function ReportsPage() {
     }
   };
 
-  // Helper для заголовка модалки
+  // Helper для заголовка
   const getModalTitle = () => {
       switch(reportType) {
           case 'invoice': return 'Generate Invoice';
           case 'act': return 'Generate Write-off Act';
-          case 'financial_report': return 'Generate Financial Report';
+          case 'financial_report': return 'Financial Report';
+          case 'product_move_dynamic': return 'Product Dynamic Report';
           default: return 'Document Generation';
       }
   };
@@ -133,7 +182,6 @@ export default function ReportsPage() {
             <p>Select document type to generate:</p>
             
             <ControlsContainer>
-                {/* 3 окремі кнопки для кожного типу */}
                 <ReportButton onClick={() => openModalWithType('invoice')}>
                     📄 Invoice
                 </ReportButton>
@@ -144,6 +192,11 @@ export default function ReportsPage() {
 
                 <ReportButton onClick={() => openModalWithType('financial_report')} style={{ backgroundColor: '#8e44ad' }}>
                     💰 Financial Report
+                </ReportButton>
+
+                {/* Нова кнопка */}
+                <ReportButton onClick={() => openModalWithType('product_move_dynamic')} style={{ backgroundColor: '#27ae60' }}>
+                    📈 Product Dynamic Report
                 </ReportButton>
             </ControlsContainer>
         </ReportsContainer>
@@ -164,14 +217,14 @@ export default function ReportsPage() {
           <ModalContent onClick={e => e.stopPropagation()}>
             <ModalTitle>{getModalTitle()}</ModalTitle>
             
-            {/* 1. Вибір транзакції (Приховано для financial_report) */}
-            {reportType !== 'financial_report' && (
+            {/* 1. ПОЛЯ ДЛЯ ТРАНЗАКЦІЙ (Invoice/Act) */}
+            {(reportType === 'invoice' || reportType === 'act') && (
                 <FormGroup>
                     <Label>Select transaction:</Label>
                     <Select 
                         value={selectedTransId} 
                         onChange={e => setSelectedTransId(e.target.value)}
-                        disabled={loadingTrans}
+                        disabled={loading}
                     >
                         <option value="">-- Transaction --</option>
                         {transactions.map(t => (
@@ -180,11 +233,52 @@ export default function ReportsPage() {
                             </option>
                         ))}
                     </Select>
-                    {loadingTrans && <small>Loading transactions...</small>}
+                    {loading && <small>Loading transactions...</small>}
                 </FormGroup>
             )}
 
-            {/* 2. Формат (Тільки HTML, заблокований) */}
+            {/* 2. ПОЛЯ ДЛЯ DYNAMIC REPORT (Product, DateFrom, DateTo) */}
+            {reportType === 'product_move_dynamic' && (
+                <>
+                    <FormGroup>
+                        <Label>Select Product:</Label>
+                        <Select
+                            value={selectedProductId}
+                            onChange={e => setSelectedProductId(e.target.value)}
+                            disabled={loading}
+                        >
+                            <option value="">-- Choose Product --</option>
+                            {products.map(p => (
+                                <option key={p.id} value={p.id}>
+                                    {p.name} (SKU: {p.article})
+                                </option>
+                            ))}
+                        </Select>
+                        {loading && <small>Loading products...</small>}
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Label>Date From:</Label>
+                        {/* type="date" автоматично створює календар */}
+                        <Input 
+                            type="date" 
+                            value={dateFrom} 
+                            onChange={e => setDateFrom(e.target.value)} 
+                        />
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Label>Date To:</Label>
+                        <Input 
+                            type="date" 
+                            value={dateTo} 
+                            onChange={e => setDateTo(e.target.value)} 
+                        />
+                    </FormGroup>
+                </>
+            )}
+
+            {/* 3. ЗАГАЛЬНЕ ПОЛЕ ФОРМАТУ */}
             <FormGroup>
                 <Label>File format:</Label>
                 <Select disabled value="html">
@@ -194,10 +288,14 @@ export default function ReportsPage() {
 
             <ModalActions>
                 <CancelButton onClick={() => setIsModalOpen(false)}>Cancel</CancelButton>
-                {/* Кнопка активна для фін. звіту завжди, для інших - якщо обрана транзакція */}
+                
                 <GenerateButton 
                     onClick={handleGenerate} 
-                    disabled={reportType !== 'financial_report' && !selectedTransId}
+                    // Кнопка активна, якщо виконані умови валідації для поточного типу
+                    disabled={
+                        (reportType === 'product_move_dynamic' && (!selectedProductId || !dateFrom || !dateTo)) ||
+                        ((reportType === 'invoice' || reportType === 'act') && !selectedTransId)
+                    }
                 >
                     Generate
                 </GenerateButton>

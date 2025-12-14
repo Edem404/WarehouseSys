@@ -19,6 +19,7 @@
 #include "reports/report_objects/invoice_report.h"
 #include "reports/report_objects/act_report.h"
 #include "reports/report_objects/financial_report.h"
+#include "reports/report_objects/product_dynamic_report.h"
 #include "reports/i_formatter.h"
 #include "reports/html_formatter.h"
 #include "WarehouseSys/models/document_data.h"
@@ -28,7 +29,7 @@ struct DocumentQuery {
     std::optional<int> category_id;
     std::optional<int> invoice_id;
     std::optional<std::vector<int>> transaction_ids;
-    std::optional<std::string> product_id;
+    std::optional<int> product_id;
     std::optional<std::string> date_from;
     std::optional<std::string> date_to;
 };
@@ -70,5 +71,6 @@ public:
     }
 
     std::string generate_report_for_single_product(ReportType type, ReportFormat format, int transaction_id);
-    std::string generate_report_for_multi_product(ReportType type, ReportFormat format, const DocumentQuery& query);
+    std::string generate_financial_report(ReportType type, ReportFormat format, const DocumentQuery& query);
+    std::string generate_dynamic_report(ReportType type, ReportFormat format, const DocumentQuery& query);
 };

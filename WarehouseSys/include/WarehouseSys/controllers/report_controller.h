@@ -16,5 +16,6 @@ public:
 	}
 
 	std::string generate_report_for_single_product(json document_generation_params);
-	std::string generate_report_for_multi_product(json document_generation_params);
+	std::string generate_financial_report(json document_generation_params);
+	std::string generate_dynamic_report(json document_generation_params);
 };

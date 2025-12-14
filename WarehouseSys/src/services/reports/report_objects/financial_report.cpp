@@ -14,30 +14,19 @@ void FinancialReport::compose_body(std::shared_ptr<IFormatter> formatter, Docume
     for (const auto& p : data.get_products()) {
         std::vector<std::string> row;
 
-        //if (p) {
-            row.push_back(std::to_string(p.get_id()));
-            row.push_back(p.get_name());
-            row.push_back(p.get_article());
+        row.push_back(std::to_string(p.get_id()));
+        row.push_back(p.get_name());
+        row.push_back(p.get_article());
 
-            int qty = p.get_quantity();
-            double sum = qty * p.get_price();
+        int qty = p.get_quantity();
+        double sum = qty * p.get_price();
 
-            row.push_back(std::to_string(qty));
-            row.push_back(std::to_string(p.get_price()));
-            row.push_back(std::to_string(sum));
-            all_products_sum += sum;
-        //}
-        //else {
-        //    row.push_back("Deleted Product");
-        //    row.push_back("-");
-        //    row.push_back("-");
-        //    row.push_back("-");
-        //    row.push_back("-");
-        //}
+        row.push_back(std::to_string(qty));
+        row.push_back(std::to_string(p.get_price()));
+        row.push_back(std::to_string(sum));
+        all_products_sum += sum;
         rows.push_back(row);
     }
-
-
 
     formatter->add_table(headers, rows);
 }

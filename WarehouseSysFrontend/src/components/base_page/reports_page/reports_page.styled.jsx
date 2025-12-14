@@ -10,6 +10,7 @@ export const ControlsContainer = styled.div`
   display: flex;
   gap: 15px;
   margin-bottom: 20px;
+  flex-wrap: wrap; /* Додаємо перенос, якщо кнопок стане багато */
 `;
 
 export const ReportButton = styled.button`
@@ -54,7 +55,7 @@ export const PreviewHeader = styled.div`
   
   h4 { 
     margin: 0; 
-    color: #2c3e50; /* Темний колір заголовка прев'ю */
+    color: #2c3e50;
   }
 `;
 
@@ -91,7 +92,7 @@ export const ModalOverlay = styled.div`
 `;
 
 export const ModalContent = styled.div`
-  background: white; /* Білий фон модалки */
+  background: white;
   padding: 30px;
   border-radius: 10px;
   width: 500px;
@@ -99,12 +100,12 @@ export const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  color: #2c3e50; /* Загальний колір тексту в модалці - темний */
+  color: #2c3e50;
 `;
 
 export const ModalTitle = styled.h3`
   margin-top: 0;
-  color: #2c3e50; /* Темний заголовок */
+  color: #2c3e50;
   text-align: center;
 `;
 
@@ -116,7 +117,7 @@ export const FormGroup = styled.div`
 
 export const Label = styled.label`
   font-size: 14px;
-  color: #2c3e50; /* Темний колір підписів */
+  color: #2c3e50;
   font-weight: 500;
 `;
 
@@ -125,8 +126,8 @@ export const Select = styled.select`
   border: 1px solid #ccc;
   border-radius: 5px;
   font-size: 15px;
-  background-color: white; /* Білий фон інпуту */
-  color: #2c3e50;          /* Темний текст всередині інпуту */
+  background-color: white;
+  color: #2c3e50;
 
   &:focus {
     border-color: #3498db;
@@ -134,8 +135,24 @@ export const Select = styled.select`
   }
 
   option {
-    color: #2c3e50; /* Темний текст опцій */
+    color: #2c3e50;
     background: white;
+  }
+`;
+
+// НОВИЙ КОМПОНЕНТ INPUT (для дат)
+export const Input = styled.input`
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 15px;
+  background-color: white;
+  color: #2c3e50;
+  font-family: inherit;
+
+  &:focus {
+    border-color: #3498db;
+    outline: none;
   }
 `;
 

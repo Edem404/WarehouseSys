@@ -40,6 +40,10 @@ IReportTemplate& ReportService::resolve_template(ReportType type) {
         static FinancialReport financial_template;
         return financial_template;
     }
+    else if (type == ReportType::PRODUCT_MOVE_DYNAMIC) {
+        static ProductDynamicReport dynamic_report;
+        return dynamic_report;
+    }
 
     throw std::runtime_error("Unsuportable report type");
 }
@@ -82,7 +86,7 @@ std::string ReportService::generate_report_for_single_product(ReportType type, R
     return template_strategy.generate(formatter, data);
 }
 
-std::string ReportService::generate_report_for_multi_product(ReportType type, ReportFormat format, const DocumentQuery& query) {
+std::string ReportService::generate_financial_report(ReportType type, ReportFormat format, const DocumentQuery& query) {
     DocumentData data;
     data.set_generated_date(now_as_string());
 
@@ -99,6 +103,62 @@ std::string ReportService::generate_report_for_multi_product(ReportType type, Re
     for (const auto& product : products) {
         data.add_product(product);
         std::cout << product.to_json() << "\n";
+    }
+
+    auto formatter = create_formatter(format);
+    auto& template_strategy = resolve_template(type);
+
+    return template_strategy.generate(formatter, data);
+}
+
+std::string ReportService::generate_dynamic_report(ReportType type, ReportFormat format, const DocumentQuery& query) {
+    if (!query.product_id.has_value()) {
+        throw std::runtime_error("product_id is required for dynamic report");
+    }
+
+    if (!query.date_from.has_value() || !query.date_to.has_value()) {
+        throw std::runtime_error("date_from and date_to are required for dynamic report");
+    }
+
+    int product_id = query.product_id.value();
+    const std::string& date_from = query.date_from.value();
+    const std::string& date_to = query.date_to.value();
+
+    std::vector<InventoryTransaction> transactions =
+        _transaction_repository->find_by_product_and_date_range(
+            product_id,
+            date_from,
+            date_to
+        );
+
+    if (transactions.empty()) {
+        throw std::runtime_error("No transactions found for given parameters");
+    }
+
+    auto product_opt = _product_repository->get_by_id(product_id);
+    if (!product_opt.has_value()) {
+        throw std::runtime_error("Product not found");
+    }
+
+    DocumentData data;
+
+    data.set_title("Product movement dynamics report");
+    data.set_generated_date(now_as_string());
+
+    data.add_product(product_opt.value());
+
+    for (const auto& t : transactions) {
+        data.add_transaction(t);
+    }
+
+    if (query.responsible_employee_id.has_value()) {
+        auto emp = _employee_repository->get_by_id(
+            query.responsible_employee_id.value()
+        );
+
+        if (emp.has_value()) {
+            data.set_employee(emp.value());
+        }
     }
 
     auto formatter = create_formatter(format);

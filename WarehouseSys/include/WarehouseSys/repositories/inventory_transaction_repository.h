@@ -9,4 +9,6 @@ class InventoryTransactionRepository : public BaseRepository<InventoryTransactio
 public:
 	InventoryTransactionRepository(std::shared_ptr<IDBSession> session)
 		: BaseRepository<InventoryTransaction>(std::move(session)) {}
+
+	std::vector<InventoryTransaction> find_by_product_and_date_range(int product_id, const std::string& date_from, const std::string& date_to);
 };
