@@ -246,3 +246,42 @@ export const ActionButtonsContainer = styled.div`
   margin-top: 15px;
   flex-wrap: wrap; 
 `;
+
+export const DashboardGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+`;
+
+export const StatHeader = styled.h3`
+  margin: 0 0 10px 0;
+  font-size: 1.1rem;
+  color: #2c3e50; /* Темно-синій, добре видно на білому */
+  font-weight: 600;
+  border-bottom: 1px solid #ecf0f1;
+  padding-bottom: 10px;
+`;
+
+export const StatBigNumber = styled.p`
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #34495e; /* Темний колір для цифр */
+  margin: 15px 0;
+`;
+
+export const StatLabel = styled.p`
+  font-size: 0.9rem;
+  color: #7f8c8d; /* Сірий для пояснень */
+  margin: 0;
+`;
+
+export const StatusIndicator = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #27ae60; /* Зелений */
+  margin: 15px 0;
+`;

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import AdminTopSection from './top_section/admin_top_section';
 
+// Імпортуємо стилі (включаючи НОВІ)
 import { 
   PageContainer, 
   MainContent, 
@@ -18,21 +19,27 @@ import {
   Select, 
   ModalButtons,
   CancelButton,
-  SubmitButton
+  SubmitButton,
+  // Нові імпорти для красивого дашборда:
+  DashboardGrid,
+  StatHeader,
+  StatBigNumber,
+  StatLabel,
+  StatusIndicator
 } from './admin_page.styled';
 
 // --- Sub-components Stubs ---
 const EmployeesStub = () => (
     <ContentCard>
         <SectionTitle>Employee Management</SectionTitle>
-        <p>List of employees...</p>
+        <p style={{color: '#7f8c8d'}}>List of employees...</p>
     </ContentCard>
 );
 
 const PositionsStub = () => (
     <ContentCard>
         <SectionTitle>Position Management</SectionTitle>
-        <p>Manage access levels...</p>
+        <p style={{color: '#7f8c8d'}}>Manage access levels...</p>
     </ContentCard>
 );
 
@@ -43,7 +50,6 @@ const RegisterUserModal = ({ isOpen, onClose }) => {
         email: '',
         password: ''
     });
-
     const [employeesList, setEmployeesList] = useState([]);
 
     useEffect(() => {
@@ -75,20 +81,17 @@ const RegisterUserModal = ({ isOpen, onClose }) => {
             alert("Please fill all fields");
             return;
         }
-
         const payload = {
             employee_id: parseInt(formData.employee_id),
             email: formData.email,
             password_hash: formData.password 
         };
-
         try {
             const response = await fetch('http://localhost:8080/employee_accounts', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
             });
-
             if (response.ok) {
                 alert("User registered successfully!");
                 onClose();
@@ -98,7 +101,6 @@ const RegisterUserModal = ({ isOpen, onClose }) => {
                 alert(`Error: ${errorData.message || 'Registration failed'}`);
             }
         } catch (error) {
-            console.error("Registration error:", error);
             alert("Failed to connect to server.");
         }
     };
@@ -137,12 +139,7 @@ const RegisterUserModal = ({ isOpen, onClose }) => {
 
 // --- MODAL: ADD EMPLOYEE ---
 const AddEmployeeModal = ({ isOpen, onClose }) => {
-    const [formData, setFormData] = useState({
-        name: '',
-        surname: '',
-        position_id: ''
-    });
-
+    const [formData, setFormData] = useState({ name: '', surname: '', position_id: '' });
     const [positionsList, setPositionsList] = useState([]);
 
     useEffect(() => {
@@ -154,9 +151,7 @@ const AddEmployeeModal = ({ isOpen, onClose }) => {
                         const data = await response.json();
                         setPositionsList(data);
                     }
-                } catch (error) {
-                    console.error("Error connecting to server:", error);
-                }
+                } catch (error) { console.error(error); }
             };
             fetchPositions();
         }
@@ -171,52 +166,42 @@ const AddEmployeeModal = ({ isOpen, onClose }) => {
 
     const handleSubmit = async () => {
         if (!formData.name || !formData.surname || !formData.position_id) {
-            alert("Please fill all fields");
-            return;
+            alert("Please fill all fields"); return;
         }
-
         const payload = {
             name: formData.name,
             surname: formData.surname,
             position_id: parseInt(formData.position_id)
         };
-
         try {
             const response = await fetch('http://localhost:8080/employees', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
             });
-
             if (response.ok) {
                 alert("Employee added successfully!");
                 onClose();
                 setFormData({ name: '', surname: '', position_id: '' });
             } else {
                 const errorData = await response.json(); 
-                alert(`Error: ${errorData.message || 'Failed to add employee'}`);
+                alert(`Error: ${errorData.message}`);
             }
-        } catch (error) {
-            console.error("Error adding employee:", error);
-            alert("Failed to connect to server.");
-        }
+        } catch (error) { alert("Failed to connect to server."); }
     };
 
     return (
         <ModalOverlay onClick={onClose}>
             <ModalContent onClick={(e) => e.stopPropagation()}>
                 <ModalTitle>Add New Employee</ModalTitle>
-                
                 <FormGroup>
                     <Label>First Name:</Label>
                     <Input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="e.g. Roman" />
                 </FormGroup>
-
                 <FormGroup>
                     <Label>Last Name:</Label>
                     <Input type="text" name="surname" value={formData.surname} onChange={handleChange} placeholder="e.g. Borduliak" />
                 </FormGroup>
-
                 <FormGroup>
                     <Label>Position:</Label>
                     <Select name="position_id" value={formData.position_id} onChange={handleChange}>
@@ -228,7 +213,6 @@ const AddEmployeeModal = ({ isOpen, onClose }) => {
                         ))}
                     </Select>
                 </FormGroup>
-
                 <ModalButtons>
                     <CancelButton onClick={onClose}>Cancel</CancelButton>
                     <SubmitButton onClick={handleSubmit}>Confirm</SubmitButton>
@@ -240,11 +224,7 @@ const AddEmployeeModal = ({ isOpen, onClose }) => {
 
 // --- MODAL: ADD SUPPLIER ---
 const AddSupplierModal = ({ isOpen, onClose }) => {
-    const [formData, setFormData] = useState({
-        name: '',
-        phone_number: '',
-        email: ''
-    });
+    const [formData, setFormData] = useState({ name: '', phone_number: '', email: '' });
 
     if (!isOpen) return null;
 
@@ -255,35 +235,24 @@ const AddSupplierModal = ({ isOpen, onClose }) => {
 
     const handleSubmit = async () => {
         if (!formData.name || !formData.phone_number || !formData.email) {
-            alert("Please fill all fields");
-            return;
+            alert("Please fill all fields"); return;
         }
-
-        const payload = {
-            name: formData.name,
-            phone_number: formData.phone_number,
-            email: formData.email
-        };
-
+        const payload = { ...formData };
         try {
             const response = await fetch('http://localhost:8080/suppliers', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
             });
-
             if (response.ok) {
                 alert("Supplier added successfully!");
                 onClose();
                 setFormData({ name: '', phone_number: '', email: '' });
             } else {
                 const errorData = await response.json(); 
-                alert(`Error: ${errorData.message || 'Failed to add supplier'}`);
+                alert(`Error: ${errorData.message}`);
             }
-        } catch (error) {
-            console.error("Error adding supplier:", error);
-            alert("Failed to connect to server.");
-        }
+        } catch (error) { alert("Failed to connect to server."); }
     };
 
     return (
@@ -292,15 +261,15 @@ const AddSupplierModal = ({ isOpen, onClose }) => {
                 <ModalTitle>Add New Supplier</ModalTitle>
                 <FormGroup>
                     <Label>Supplier Name:</Label>
-                    <Input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="e.g. Global Tech LLC" />
+                    <Input type="text" name="name" value={formData.name} onChange={handleChange} />
                 </FormGroup>
                 <FormGroup>
                     <Label>Phone Number:</Label>
-                    <Input type="text" name="phone_number" value={formData.phone_number} onChange={handleChange} placeholder="e.g. +380501234567" />
+                    <Input type="text" name="phone_number" value={formData.phone_number} onChange={handleChange} />
                 </FormGroup>
                 <FormGroup>
                     <Label>Email:</Label>
-                    <Input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="contact@supplier.com" />
+                    <Input type="email" name="email" value={formData.email} onChange={handleChange} />
                 </FormGroup>
                 <ModalButtons>
                     <CancelButton onClick={onClose}>Cancel</CancelButton>
@@ -313,9 +282,7 @@ const AddSupplierModal = ({ isOpen, onClose }) => {
 
 // --- MODAL: ADD PRODUCT TYPE ---
 const AddProductTypeModal = ({ isOpen, onClose }) => {
-    const [formData, setFormData] = useState({
-        type_name: ''
-    });
+    const [formData, setFormData] = useState({ type_name: '' });
 
     if (!isOpen) return null;
 
@@ -325,34 +292,22 @@ const AddProductTypeModal = ({ isOpen, onClose }) => {
     };
 
     const handleSubmit = async () => {
-        if (!formData.type_name) {
-            alert("Please fill the type name");
-            return;
-        }
-
-        const payload = {
-            type_name: formData.type_name
-        };
-
+        if (!formData.type_name) { alert("Please fill the type name"); return; }
         try {
             const response = await fetch('http://localhost:8080/product_types', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
+                body: JSON.stringify({ type_name: formData.type_name }),
             });
-
             if (response.ok) {
                 alert("Product Type added successfully!");
                 onClose();
                 setFormData({ type_name: '' });
             } else {
                 const errorData = await response.json(); 
-                alert(`Error: ${errorData.message || 'Failed to add product type'}`);
+                alert(`Error: ${errorData.message}`);
             }
-        } catch (error) {
-            console.error("Error adding product type:", error);
-            alert("Failed to connect to server.");
-        }
+        } catch (error) { alert("Failed to connect to server."); }
     };
 
     return (
@@ -361,7 +316,7 @@ const AddProductTypeModal = ({ isOpen, onClose }) => {
                 <ModalTitle>Add Product Type</ModalTitle>
                 <FormGroup>
                     <Label>Type Name:</Label>
-                    <Input type="text" name="type_name" value={formData.type_name} onChange={handleChange} placeholder="e.g. Electronics" />
+                    <Input type="text" name="type_name" value={formData.type_name} onChange={handleChange} />
                 </FormGroup>
                 <ModalButtons>
                     <CancelButton onClick={onClose}>Cancel</CancelButton>
@@ -372,11 +327,9 @@ const AddProductTypeModal = ({ isOpen, onClose }) => {
     );
 };
 
-// --- NEW MODAL: ADD INVENTORY TRANSACTION TYPE ---
+// --- MODAL: ADD INVENTORY TRANSACTION TYPE ---
 const AddInventoryTransactionTypeModal = ({ isOpen, onClose }) => {
-    const [formData, setFormData] = useState({
-        type_name: ''
-    });
+    const [formData, setFormData] = useState({ type_name: '' });
 
     if (!isOpen) return null;
 
@@ -386,34 +339,22 @@ const AddInventoryTransactionTypeModal = ({ isOpen, onClose }) => {
     };
 
     const handleSubmit = async () => {
-        if (!formData.type_name) {
-            alert("Please fill the transaction type name");
-            return;
-        }
-
-        const payload = {
-            type_name: formData.type_name
-        };
-
+        if (!formData.type_name) { alert("Please fill the name"); return; }
         try {
             const response = await fetch('http://localhost:8080/inventory_transaction_types', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
+                body: JSON.stringify({ type_name: formData.type_name }),
             });
-
             if (response.ok) {
                 alert("Transaction Type added successfully!");
                 onClose();
                 setFormData({ type_name: '' });
             } else {
                 const errorData = await response.json(); 
-                alert(`Error: ${errorData.message || 'Failed to add transaction type'}`);
+                alert(`Error: ${errorData.message}`);
             }
-        } catch (error) {
-            console.error("Error adding transaction type:", error);
-            alert("Failed to connect to server.");
-        }
+        } catch (error) { alert("Failed to connect to server."); }
     };
 
     return (
@@ -422,7 +363,7 @@ const AddInventoryTransactionTypeModal = ({ isOpen, onClose }) => {
                 <ModalTitle>Add Transaction Type</ModalTitle>
                 <FormGroup>
                     <Label>Transaction Type Name:</Label>
-                    <Input type="text" name="type_name" value={formData.type_name} onChange={handleChange} placeholder="e.g. Restock" />
+                    <Input type="text" name="type_name" value={formData.type_name} onChange={handleChange} />
                 </FormGroup>
                 <ModalButtons>
                     <CancelButton onClick={onClose}>Cancel</CancelButton>
@@ -433,76 +374,74 @@ const AddInventoryTransactionTypeModal = ({ isOpen, onClose }) => {
     );
 };
 
-
-// --- DASHBOARD COMPONENT ---
+// --- DASHBOARD COMPONENT (ОНОВЛЕНО З ВИКОРИСТАННЯМ НОВИХ СТИЛІВ) ---
 const AdminDashboard = ({ 
     onOpenRegister, 
     onOpenAddEmployee,
     onOpenAddSupplier,
     onOpenAddProductType,
-    onOpenAddInventoryTransactionType // New handler
+    onOpenAddInventoryTransactionType 
 }) => (
     <>
       <SectionTitle>Admin Dashboard</SectionTitle>
       
       <ContentCard>
-          <h3>Quick Actions</h3>
-          <p>Perform administrative tasks quickly.</p>
+          <StatHeader>Quick Actions</StatHeader>
+          <StatLabel style={{marginBottom: '15px'}}>Perform administrative tasks quickly.</StatLabel>
           
           <ActionButtonsContainer>
               <ActionButton onClick={onOpenAddEmployee} style={{backgroundColor: '#e67e22'}}>
                   + Add Employee
               </ActionButton>
-              
               <ActionButton onClick={onOpenRegister}>
-                  + Register User Account
+                  + Register User
               </ActionButton>
-
               <ActionButton onClick={onOpenAddSupplier} style={{backgroundColor: '#8e44ad'}}>
                   + Add Supplier
               </ActionButton>
-
               <ActionButton onClick={onOpenAddProductType} style={{backgroundColor: '#16a085'}}>
                   + Add Product Type
               </ActionButton>
-
               <ActionButton onClick={onOpenAddInventoryTransactionType} style={{backgroundColor: '#34495e'}}>
-                  + Add Transaction Type
+                  + Add Trans. Type
               </ActionButton>
           </ActionButtonsContainer>
-
       </ContentCard>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
+      {/* Grid з картками статистики */}
+      <DashboardGrid>
           <ContentCard>
-            <h3>System Status</h3>
-            <p style={{color: 'green', fontWeight: 'bold', fontSize: '1.2em'}}>● Online</p>
+            <StatHeader>System Status</StatHeader>
+            <StatusIndicator>
+                <span style={{fontSize: '1.5em', lineHeight: '0'}}>●</span> Online
+            </StatusIndicator>
+            <StatLabel>Server is running normally</StatLabel>
           </ContentCard>
 
           <ContentCard>
-            <h3>Total Users</h3>
-            <p style={{fontSize: '24px', margin: '10px 0'}}>Loading...</p>
+            <StatHeader>Total Users</StatHeader>
+            <StatBigNumber>Loading...</StatBigNumber>
+            <StatLabel>Registered in system</StatLabel>
           </ContentCard>
           
           <ContentCard>
-            <h3>Pending Approvals</h3>
-            <p>0 tasks pending</p>
+            <StatHeader>Pending Tasks</StatHeader>
+            <StatBigNumber>0</StatBigNumber>
+            <StatLabel>Approvals required</StatLabel>
           </ContentCard>
-      </div>
+      </DashboardGrid>
     </>
 );
 
 // --- MAIN PAGE COMPONENT ---
-
 const AdminPage = () => {
   const location = useLocation();
   
-  // States for all modals
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
   const [isAddSupplierModalOpen, setIsAddSupplierModalOpen] = useState(false);
   const [isAddProductTypeModalOpen, setIsAddProductTypeModalOpen] = useState(false);
-  const [isAddInventoryTransactionTypeModalOpen, setIsAddInventoryTransactionTypeModalOpen] = useState(false); // New State
+  const [isAddInventoryTransactionTypeModalOpen, setIsAddInventoryTransactionTypeModalOpen] = useState(false); 
 
   const isEmployeesPage = location.pathname.includes('/employees');
   const isPositionsPage = location.pathname.includes('/positions');
@@ -510,11 +449,8 @@ const AdminPage = () => {
   return (
     <PageContainer>
       <AdminTopSection />
-
       <MainContent>
-        
         {isEmployeesPage && <EmployeesStub />}
-        
         {isPositionsPage && <PositionsStub />}
         
         {!isEmployeesPage && !isPositionsPage && (
@@ -526,35 +462,13 @@ const AdminPage = () => {
                 onOpenAddInventoryTransactionType={() => setIsAddInventoryTransactionTypeModalOpen(true)}
             />
         )}
-
       </MainContent>
 
-      {/* Modals */}
-      <RegisterUserModal 
-          isOpen={isRegisterModalOpen} 
-          onClose={() => setIsRegisterModalOpen(false)} 
-      />
-
-      <AddEmployeeModal
-          isOpen={isAddEmployeeModalOpen}
-          onClose={() => setIsAddEmployeeModalOpen(false)}
-      />
-
-      <AddSupplierModal
-          isOpen={isAddSupplierModalOpen}
-          onClose={() => setIsAddSupplierModalOpen(false)}
-      />
-
-      <AddProductTypeModal
-          isOpen={isAddProductTypeModalOpen}
-          onClose={() => setIsAddProductTypeModalOpen(false)}
-      />
-
-      <AddInventoryTransactionTypeModal
-          isOpen={isAddInventoryTransactionTypeModalOpen}
-          onClose={() => setIsAddInventoryTransactionTypeModalOpen(false)}
-      />
-
+      <RegisterUserModal isOpen={isRegisterModalOpen} onClose={() => setIsRegisterModalOpen(false)} />
+      <AddEmployeeModal isOpen={isAddEmployeeModalOpen} onClose={() => setIsAddEmployeeModalOpen(false)} />
+      <AddSupplierModal isOpen={isAddSupplierModalOpen} onClose={() => setIsAddSupplierModalOpen(false)} />
+      <AddProductTypeModal isOpen={isAddProductTypeModalOpen} onClose={() => setIsAddProductTypeModalOpen(false)} />
+      <AddInventoryTransactionTypeModal isOpen={isAddInventoryTransactionTypeModalOpen} onClose={() => setIsAddInventoryTransactionTypeModalOpen(false)} />
     </PageContainer>
   );
 };

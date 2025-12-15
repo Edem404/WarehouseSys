@@ -20,6 +20,7 @@
 #include "reports/report_objects/act_report.h"
 #include "reports/report_objects/financial_report.h"
 #include "reports/report_objects/product_dynamic_report.h"
+#include "reports/report_objects/warehouse_state_report.h"
 #include "reports/i_formatter.h"
 #include "reports/html_formatter.h"
 #include "WarehouseSys/models/document_data.h"
@@ -73,4 +74,5 @@ public:
     std::string generate_report_for_single_product(ReportType type, ReportFormat format, int transaction_id);
     std::string generate_financial_report(ReportType type, ReportFormat format, const DocumentQuery& query);
     std::string generate_dynamic_report(ReportType type, ReportFormat format, const DocumentQuery& query);
+    std::string generate_warehouse_state_report(ReportType type, ReportFormat format, const DocumentQuery& query);
 };

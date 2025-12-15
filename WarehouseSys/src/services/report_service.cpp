@@ -44,6 +44,10 @@ IReportTemplate& ReportService::resolve_template(ReportType type) {
         static ProductDynamicReport dynamic_report;
         return dynamic_report;
     }
+    else if (type == ReportType::WAREHOUSE_STATE) {
+        static WarehouseStateReport warehouse_state_report;
+        return warehouse_state_report;
+    }
 
     throw std::runtime_error("Unsuportable report type");
 }
@@ -158,6 +162,39 @@ std::string ReportService::generate_dynamic_report(ReportType type, ReportFormat
 
         if (emp.has_value()) {
             data.set_employee(emp.value());
+        }
+    }
+
+    auto formatter = create_formatter(format);
+    auto& template_strategy = resolve_template(type);
+
+    return template_strategy.generate(formatter, data);
+}
+
+std::string ReportService::generate_warehouse_state_report(ReportType type, ReportFormat format, const DocumentQuery& query)
+{
+    if (!query.date_to.has_value()) {
+        throw std::runtime_error("Missing required field: date_to");
+    }
+
+    DocumentData data;
+
+    data.set_title("Warehouse state report");
+    data.set_generated_date(query.date_to.value());
+
+    const std::vector<Product> products = _product_repository->get_all();
+
+    for (const auto& product : products) {
+        data.add_product(product);
+
+        std::optional<InventoryTransaction> last_tx =
+            _transaction_repository->find_last_before_date(
+                product.get_id(),
+                query.date_to.value()
+            );
+
+        if (last_tx.has_value()) {
+            data.add_transaction(last_tx.value());
         }
     }
 
