@@ -20,36 +20,11 @@ inline std::string now_as_string()
 }
 
 std::shared_ptr<IFormatter> ReportService::create_formatter(ReportFormat format) {
-    if (format == ReportFormat::HTML) {
-        return std::make_shared<HTMLFormatter>();
-    }
-
-    throw std::runtime_error("Unsuportable file format");
+    return _formatter_factory->create(format);
 }
 
 IReportTemplate& ReportService::resolve_template(ReportType type) {
-    if (type == ReportType::INVOICE) {
-        static InvoiceReport invoice_template;
-        return invoice_template;
-    }
-    else if (type == ReportType::ACT) {
-        static ActReport act_template;
-        return act_template;
-    }
-    else if (type == ReportType::FINANCIAL_REPORT) {
-        static FinancialReport financial_template;
-        return financial_template;
-    }
-    else if (type == ReportType::PRODUCT_MOVE_DYNAMIC) {
-        static ProductDynamicReport dynamic_report;
-        return dynamic_report;
-    }
-    else if (type == ReportType::WAREHOUSE_STATE) {
-        static WarehouseStateReport warehouse_state_report;
-        return warehouse_state_report;
-    }
-
-    throw std::runtime_error("Unsuportable report type");
+    return _report_template_registry->resolve(type);
 }
 
 DocumentData ReportService::prepare_document_data(int transaction_id) {

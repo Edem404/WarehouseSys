@@ -21,8 +21,10 @@
 #include "reports/report_objects/financial_report.h"
 #include "reports/report_objects/product_dynamic_report.h"
 #include "reports/report_objects/warehouse_state_report.h"
+#include "reports/report_objects/report_template_registry.h"
 #include "reports/i_formatter.h"
 #include "reports/html_formatter.h"
+#include "reports/default_formatter_factory.h"
 #include "WarehouseSys/models/document_data.h"
 
 struct DocumentQuery {
@@ -42,6 +44,9 @@ private:
     std::shared_ptr<SupplierRepository> _supplier_repository;
     std::shared_ptr<EmployeeRepository> _employee_repository;
 
+    std::shared_ptr<IFormatterFactory> _formatter_factory;
+    std::shared_ptr<ReportTemplateRegistry> _report_template_registry;
+
     std::shared_ptr<IFormatter> create_formatter(ReportFormat format);
     IReportTemplate& resolve_template(ReportType type);
 
@@ -52,8 +57,12 @@ public:
         std::shared_ptr<IRepository<InventoryTransaction>> trans_repo_iface,
         std::shared_ptr<IRepository<Product>> prod_repo_iface,
         std::shared_ptr<IRepository<Supplier>> sup_repo_iface,
-        std::shared_ptr<IRepository<Employee>> emp_repo_iface
+        std::shared_ptr<IRepository<Employee>> emp_repo_iface,
+        std::shared_ptr<IFormatterFactory> formatter_factory,
+        std::shared_ptr<ReportTemplateRegistry> report_template_registry
     )
+        : _formatter_factory(std::move(formatter_factory))
+        , _report_template_registry(std::move(report_template_registry))
     {
         _transaction_repository = std::dynamic_pointer_cast<InventoryTransactionRepository>(trans_repo_iface);
         _product_repository = std::dynamic_pointer_cast<ProductRepository>(prod_repo_iface);
@@ -67,6 +76,18 @@ public:
         {
             throw std::runtime_error(
                 "ReportService: provided repositories have wrong type"
+            );
+        }
+
+        if (!_formatter_factory) {
+            throw std::runtime_error(
+                "ReportService: formatter factory must not be null"
+            );
+        }
+
+        if (!_report_template_registry) {
+            throw std::runtime_error(
+                "ReportService: report template factory must not be null"
             );
         }
     }

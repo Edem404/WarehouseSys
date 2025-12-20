@@ -110,6 +110,27 @@ int main()
             return crow::response(result.dump(4));
         });
 
+        static InvoiceReport invoice_report;
+        static ActReport act_report;
+        static FinancialReport financial_report;
+        static ProductDynamicReport dynamic_report;
+        static WarehouseStateReport warehouse_state_report;
+
+        auto report_template_registry = std::make_shared<ReportTemplateRegistry>();
+        report_template_registry->register_template(ReportType::INVOICE, invoice_report);
+        report_template_registry->register_template(ReportType::ACT, act_report);
+        report_template_registry->register_template(ReportType::FINANCIAL_REPORT, financial_report);
+        report_template_registry->register_template(ReportType::PRODUCT_MOVE_DYNAMIC, dynamic_report);
+        report_template_registry->register_template(ReportType::WAREHOUSE_STATE, warehouse_state_report);
+
+        auto formatter_factory = std::make_shared<DefaultFormatterFactory>();
+        formatter_factory->register_formatter(
+            ReportFormat::HTML,
+            []() {
+                return std::make_shared<HTMLFormatter>();
+            }
+        );
+
         //repositories
         std::shared_ptr<IRepository<EmployeePosition>> employee_position_repo =
             std::make_shared<EmployeePositionRepository>(db_session);
@@ -146,7 +167,7 @@ int main()
         std::shared_ptr<IService<InventoryTransaction>> inventory_transaction_service =
             std::make_shared<InventoryTransactionService>(inventory_transaction_repo, product_service);
         std::shared_ptr<ReportService> report_service =
-            std::make_shared<ReportService>(inventory_transaction_repo, product_repo, supplier_repo, employee_repo);
+            std::make_shared<ReportService>(inventory_transaction_repo, product_repo, supplier_repo, employee_repo, formatter_factory, report_template_registry);
 
         //controllers
         std::shared_ptr<IController<EmployeePosition>> employee_position_controller =

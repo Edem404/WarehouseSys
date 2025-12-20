@@ -18,6 +18,8 @@
 #include <crow/middlewares/cors.h>
 #include "database/soci_row.h"
 #include "WarehouseSys/database/soci_session.h"
+#include "WarehouseSys/services/reports/default_formatter_factory.h"
+#include "WarehouseSys/services/reports/report_objects/report_template_registry.h"
 
 //repositories
 #include <repositories/employee_position_repository.h>
