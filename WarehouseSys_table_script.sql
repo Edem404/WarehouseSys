@@ -1,3 +1,8 @@
+SELECT 'CREATE DATABASE warehouse_db'
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'warehouse_db')\gexec
+
+\c warehouse_db
+
 CREATE TABLE IF NOT EXISTS suppliers (
     -- id: int -> SERIAL (автоінкремент 1, 2, 3...)
     id SERIAL PRIMARY KEY,
